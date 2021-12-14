@@ -17,19 +17,27 @@ class Body extends StatelessWidget {
         ProfileMenu(
             icon: "assets/images/Icons/user.svg",
             text: "Mon compte",
-            press: () {}),
+            press: () {
+              Navigator.pushNamed(context, "mon_compte");
+            }),
         ProfileMenu(
             icon: "assets/images/Icons/preferences.svg",
             text: "Mes preferences",
-            press: () {}),
+            press: () {
+              Navigator.pushNamed(context, "mes_preferences");
+            }),
         ProfileMenu(
             icon: "assets/images/Icons/friends.svg",
             text: "Mes amis",
-            press: () {}),
+            press: () {
+              Navigator.pushNamed(context, "mes_amis");
+            }),
         ProfileMenu(
             icon: "assets/images/Icons/Lock.svg",
             text: "Nouveau mot de passe",
-            press: () {}),
+            press: () {
+              Navigator.pushNamed(context, "nvx_mdp");
+            }),
         ProfileMenu(
             icon: "assets/images/Icons/LogOut.svg",
             text: "Déconnexion",
