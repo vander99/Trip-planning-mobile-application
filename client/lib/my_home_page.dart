@@ -87,7 +87,24 @@ class SearchSection extends StatelessWidget {
                             border: InputBorder.none),
                       ))),
               const SizedBox(width: 10),
-              Container(height: 50, width: 100, color: Colors.green)
+              Container(
+                  height: 50,
+                  width: 50,
+                  decoration: const BoxDecoration(boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey,
+                      blurRadius: 4,
+                      offset: Offset(0, 4),
+                    ),
+                  ], borderRadius: BorderRadius.all(Radius.circular(25))),
+                  child: ElevatedButton(
+                      onPressed: () {},
+                      child: const Icon(
+                        Icons.search,
+                        size: 26,
+                      ),
+                      style: ElevatedButton.styleFrom(
+                          shape: const CircleBorder(), primary: Colors.green)))
             ]),
             Container(height: 50, color: Colors.red),
           ],
