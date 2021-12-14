@@ -63,7 +63,7 @@ class SearchSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
         color: Colors.grey[200],
-        padding: const EdgeInsets.fromLTRB(10, 25, 10, 10),
+        padding: const EdgeInsets.fromLTRB(10, 45, 10, 10),
         child: Column(
           children: [
             Row(children: [
@@ -106,7 +106,25 @@ class SearchSection extends StatelessWidget {
                       style: ElevatedButton.styleFrom(
                           shape: const CircleBorder(), primary: Colors.green)))
             ]),
-            Container(height: 50, color: Colors.red),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                    margin: const EdgeInsets.all(10),
+                    child: Column(children: const [
+                      Text('Choisir une date',
+                          style: TextStyle(color: Colors.grey)),
+                      Text('12 Dec- 22 Dec')
+                    ])),
+                Container(
+                    margin: const EdgeInsets.all(10),
+                    child: Column(children: const [
+                      Text('Nombre de personnes',
+                          style: TextStyle(color: Colors.grey)),
+                      Text('3')
+                    ]))
+              ],
+            )
           ],
         ));
   }
@@ -115,6 +133,28 @@ class SearchSection extends StatelessWidget {
 class HotelSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container(height: 1200, color: Colors.white);
+    return Container(
+        padding: EdgeInsets.all(10),
+        color: Colors.white,
+        child: Column(children: [
+          Container(
+              color: Colors.red,
+              height: 50,
+              child: Row(children: [
+                const Text('550 hotels foundsFilters',
+                    style: TextStyle(color: Colors.black)),
+                Row(
+                  children: const [
+                    IconButton(
+                        onPressed: null,
+                        icon: Icon(Icons.filter_list_outlined,
+                            color: Colors.green, size: 25)),
+                    Text('550 hotels foundsFilters',
+                        style: TextStyle(color: Colors.black))
+                  ],
+                )
+              ])),
+          Container(color: Colors.blue, height: 1000)
+        ]));
   }
 }
