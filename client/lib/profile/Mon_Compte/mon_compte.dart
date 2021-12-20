@@ -99,6 +99,7 @@ class MonCompte extends StatelessWidget {
               buildTextField("Full Name", "my name", false),
               buildTextField("E-mail", "my email", false),
               buildTextField("Phone number", "0755224313", false),
+              buildTextField("Description", "Her is my description", false),
               SizedBox(
                 height: 35,
               ),

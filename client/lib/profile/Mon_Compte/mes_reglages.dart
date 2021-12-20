@@ -100,6 +100,7 @@ class MesReglages extends StatelessWidget {
               buildTextField("E-mail", "my email", false),
               buildTextField("Password", "********", true),
               buildTextField("Phone number", "0755224313", false),
+              buildTextField("Desription", "Her is my description", false),
               SizedBox(
                 height: 35,
               ),

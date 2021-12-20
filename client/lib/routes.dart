@@ -8,6 +8,7 @@ getRoutes() {
   return {
     //MonCompte.route: (context) => MonCompte(),
     MonCompte.route: (context) => MonCompte(),
+    //MesAmis.route: (context) => MesAmis(),
     MesAmis.route: (context) => MesAmis(),
     MesPreferences.route: (context) => MesPreferences(),
     NvxMdp.route: (context) => NvxMdp(),
