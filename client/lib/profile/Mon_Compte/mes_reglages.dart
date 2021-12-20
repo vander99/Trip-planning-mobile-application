@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-class MonCompte extends StatelessWidget {
-  const MonCompte({Key? key}) : super(key: key);
-  static String route = "mon_compte";
+class MesReglages extends StatelessWidget {
+  const MesReglages({Key? key}) : super(key: key);
+  static String route = "mes_reglages";
 
   //bool showPassword = false;
   @override
@@ -27,7 +27,7 @@ class MonCompte extends StatelessWidget {
               color: Colors.green,
             ),
             onPressed: () {
-              Navigator.pushNamed(context, "mes_reglages");
+              //Navigator.pushNamed(context, "");
             },
           ),
         ],
@@ -41,7 +41,7 @@ class MonCompte extends StatelessWidget {
           child: ListView(
             children: [
               Text(
-                "Mon Profile",
+                "Edit Profile",
                 style: TextStyle(fontSize: 25, fontWeight: FontWeight.w500),
               ),
               SizedBox(
@@ -98,10 +98,44 @@ class MonCompte extends StatelessWidget {
               ),
               buildTextField("Full Name", "my name", false),
               buildTextField("E-mail", "my email", false),
+              buildTextField("Password", "********", true),
               buildTextField("Phone number", "0755224313", false),
               SizedBox(
                 height: 35,
               ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  OutlineButton(
+                    padding: EdgeInsets.symmetric(horizontal: 50),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20)),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text("CANCEL",
+                        style: TextStyle(
+                            fontSize: 14,
+                            letterSpacing: 2.2,
+                            color: Colors.black)),
+                  ),
+                  RaisedButton(
+                    onPressed: () {},
+                    color: Colors.green,
+                    padding: EdgeInsets.symmetric(horizontal: 50),
+                    elevation: 2,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20)),
+                    child: Text(
+                      "SAVE",
+                      style: TextStyle(
+                          fontSize: 14,
+                          letterSpacing: 2.2,
+                          color: Colors.white),
+                    ),
+                  )
+                ],
+              )
             ],
           ),
         ),
