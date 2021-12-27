@@ -22,14 +22,12 @@ class ProfileMenu extends StatelessWidget {
         color: Color(0xFFF5F6F9),
         onPressed: press,
         child: Row(children: [
-          SvgPicture.asset(/*"assets/images/Icons/user.svg"*/ icon,
-              width: 22, color: Color(0xFFFF7643) //kPrimary
+          SvgPicture.asset(icon, width: 22, color: Colors.green //kPrimary
               ),
           SizedBox(width: 20),
           Expanded(
-              child: Text(/*"My Account"*/ text,
-                  style: TextStyle(color: Color(0xFF757575)))),
-          Icon(Icons.arrow_forward_ios)
+              child: Text(text, style: TextStyle(color: Color(0xFF757575)))),
+          Icon(Icons.arrow_forward_ios, color: Colors.green)
         ]),
       ),
     );

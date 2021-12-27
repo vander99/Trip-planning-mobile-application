@@ -1,29 +1,5 @@
-/*import 'package:flutter/material.dart';
-
-class MesAmis extends StatelessWidget {
-  const MesAmis({Key? key}) : super(key: key);
-
-  static String route = "mes_amis";
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: new AppBar(
-        title: const Center(
-            child:
-                Text('Mes amis', style: TextStyle(color: Color(0xFF757575)))),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        brightness: Brightness.light,
-      ),
-      body: const Center(
-        child: Text('Mes amis'),
-      ),
-    );
-  }
-}*/
-
 import 'package:flutter/material.dart';
+import 'package:client/my_home_page.dart';
 
 class MesAmis extends StatefulWidget {
   const MesAmis({Key? key}) : super(key: key);
@@ -71,8 +47,7 @@ class _MesAmis extends State<MesAmis> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar:
-          PreferredSize(child: getAppBar(), preferredSize: Size.fromHeight(0)),
+      appBar: MyAppBar(text: "Mes amis"),
       body: getBody(),
     );
   }
@@ -92,11 +67,7 @@ class _MesAmis extends State<MesAmis> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(
-              height: 20,
-            ),
-            Text(
-              "Mes amis",
-              style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+              height: 2,
             ),
             SizedBox(
               height: 30,
