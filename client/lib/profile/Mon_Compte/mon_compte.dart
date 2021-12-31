@@ -1,10 +1,34 @@
+import 'dart:convert';
+
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:flutter/material.dart';
+import 'dart:developer';
+
+Map<String, dynamic> user = {};
+
+void getUserDoc() async {
+  print("Enter to get User Doc");
+  final userRef = FirebaseFirestore.instance.collection('users');
+  Map<String, dynamic> data;
+
+  String userId = (await FirebaseAuth.instance.currentUser!).uid;
+  print("User ID: " + userId);
+  userRef.doc(userId).get().then((DocumentSnapshot doc) {
+    //final data = doc.data();
+    user = doc.data() as Map<String, dynamic>;
+  });
+}
 
 class MonCompte extends StatelessWidget {
-  const MonCompte({Key? key}) : super(key: key);
+  MonCompte({Key? key}) : super(key: key);
   static String route = "mon_compte";
 
-  //bool showPassword = false;
+  final initialize = getUserDoc();
+  //final user = getUserDoc();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -77,10 +101,10 @@ class MonCompte extends StatelessWidget {
               SizedBox(
                 height: 35,
               ),
-              buildTextField("Full Name", "my name", false),
-              buildTextField("E-mail", "my email", false),
-              buildTextField("Phone number", "0755224313", false),
-              buildTextField("Description", "Her is my description", false),
+              buildTextField("Pseudo", user['pseudo'], false),
+              buildTextField("E-mail", user['email'], false),
+              buildTextField("Télephone", user['phone number'], false),
+              buildTextField("Description", user['description'], false),
               SizedBox(
                 height: 35,
               ),
@@ -118,5 +142,26 @@ class MonCompte extends StatelessWidget {
             )),
       ),
     );
+  }
+}
+
+class UserData {
+  final String password;
+  final String description;
+  final String pseudo;
+  final String email;
+
+  UserData(
+      {required this.password,
+      required this.description,
+      required this.pseudo,
+      required this.email});
+
+  factory UserData.fromJson(Map<String, dynamic> json) {
+    return UserData(
+        password: json['password'],
+        description: json['description'],
+        pseudo: json['pseudo'],
+        email: json['email']);
   }
 }
