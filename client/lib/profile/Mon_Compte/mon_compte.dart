@@ -10,14 +10,11 @@ import 'dart:developer';
 Map<String, dynamic> user = {};
 
 void getUserDoc() async {
-  print("Enter to get User Doc");
   final userRef = FirebaseFirestore.instance.collection('users');
   Map<String, dynamic> data;
 
   String userId = (await FirebaseAuth.instance.currentUser!).uid;
-  print("User ID: " + userId);
   userRef.doc(userId).get().then((DocumentSnapshot doc) {
-    //final data = doc.data();
     user = doc.data() as Map<String, dynamic>;
   });
 }
@@ -27,7 +24,6 @@ class MonCompte extends StatelessWidget {
   static String route = "mon_compte";
 
   final initialize = getUserDoc();
-  //final user = getUserDoc();
 
   @override
   Widget build(BuildContext context) {
