@@ -26,22 +26,26 @@ class AuthenticationService {
     }
   }
 
-  Future<bool> signUp(
-      {required String email,
-      required String password,
-      required String pseudo,
-      required String phone}) async {
+  Future<bool> signUp({
+    required String email,
+    required String password,
+    required String pseudo,
+    required String phone,
+  }) async {
     bool signedUp = false;
     try {
       await _firebaseAuth.createUserWithEmailAndPassword(
           email: email, password: password);
-      CollectionReference users =
-          FirebaseFirestore.instance.collection('users');
-      users.add({
+      String userId = (await FirebaseAuth.instance.currentUser!).uid;
+
+      DocumentReference<Map<String, dynamic>> users =
+          FirebaseFirestore.instance.collection('users').doc(userId);
+      users.set({
         'email': email,
         'password': password,
         'pseudo': pseudo,
-        'phone number': phone
+        'phone number': phone,
+        'description': ""
       });
       signedUp = true;
       return signedUp;

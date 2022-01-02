@@ -62,18 +62,22 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: MyAppBar(),
-        body: SingleChildScrollView(
-          child: Column(children: <Widget>[SearchSection(), HotelSection()]),
-        ),
+    return Scaffold(
+      appBar: MyAppBar(text: "Explore"),
+      body: SingleChildScrollView(
+        child: Column(children: <Widget>[SearchSection(), HotelSection()]),
       ),
     );
   }
 }
 
 class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
+  const MyAppBar({
+    Key? key,
+    required this.text,
+  }) : super(key: key);
+  final String text;
+
   Size get preferredSize => new Size.fromHeight(50);
   @override
   Widget build(BuildContext context) {
@@ -84,10 +88,12 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
           color: Colors.grey[800],
           size: 20,
         ),
-        onPressed: null,
+        onPressed: () {
+          Navigator.of(context).pop();
+        },
       ),
-      title: const Text(
-        'Explore',
+      title: Text(
+        text,
         style: TextStyle(
           color: Colors.black,
           fontSize: 22,

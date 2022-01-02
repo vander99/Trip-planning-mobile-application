@@ -8,30 +8,34 @@ class ProfilePic extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-        height: 115,
-        width: 115,
-        child:
-            Stack(fit: StackFit.expand, overflow: Overflow.visible, children: [
-          CircleAvatar(
-            backgroundImage: AssetImage("assets/images/Profile/profile.png"),
+    return Container(
+        margin: const EdgeInsets.only(top: 20.0),
+        child: Center(
+          child: Stack(
+            children: [
+              Container(
+                width: 130,
+                height: 130,
+                decoration: BoxDecoration(
+                    border: Border.all(
+                        width: 4,
+                        color: Theme.of(context).scaffoldBackgroundColor),
+                    boxShadow: [
+                      BoxShadow(
+                          spreadRadius: 2,
+                          blurRadius: 10,
+                          color: Colors.black.withOpacity(0.1),
+                          offset: Offset(0, 10))
+                    ],
+                    shape: BoxShape.circle,
+                    image: DecorationImage(
+                        fit: BoxFit.cover,
+                        image: NetworkImage(
+                          "https://images.pexels.com/photos/3307758/pexels-photo-3307758.jpeg?auto=compress&cs=tinysrgb&dpr=3&h=250",
+                        ))),
+              ),
+            ],
           ),
-          Positioned(
-              right: -12,
-              bottom: 0,
-              child: SizedBox(
-                  height: 46,
-                  width: 46,
-                  child: FlatButton(
-                      padding: EdgeInsets.zero,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(50),
-                        side: BorderSide(color: Colors.white),
-                      ),
-                      color: Color(0xFFF5F6F9),
-                      onPressed: () {},
-                      child:
-                          SvgPicture.asset("assets/images/Icons/camera.svg"))))
-        ]));
+        ));
   }
 }
