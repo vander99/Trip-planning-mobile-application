@@ -1,3 +1,18 @@
+/*
+
+taper sur un terminal :
+      curl --request POST \
+         --url 'https://api.makcorps.com/auth' \
+         --header 'Content-Type: application/json' \
+         --data '{
+              "username":"tsafira",
+              "password":"azerty123"
+      }'
+
+
+Puis récupérer le token et le remplacer dans le parametre Authorization ligne 43 
+*/
+
 import 'dart:io';
 
 import 'package:client/authentication_service.dart';
@@ -10,6 +25,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import 'hotel.dart';
+
 // ignore: constant_identifier_names
 
 class MyHomePage extends StatefulWidget {
@@ -19,23 +36,18 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-Future<List> fetchHotel() async {
-  final response = await http.get(
-      Uri.parse(
-          'https://priceline-com-provider.p.rapidapi.com/v1/hotels/locations?search_type=HOTEL&name=Bordeaux'),
-      // headers: {
-      //   HttpHeaders.authorizationHeader:
-      //       "8da6724a93msh2894fa97e7a2e57p13d12fjsn61de0eb7ba55",
-      // },
-      headers: {
-        "x-rapidapi-host": "priceline-com-provider.p.rapidapi.com",
-        "x-rapidapi-key": "8da6724a93msh2894fa97e7a2e57p13d12fjsn61de0eb7ba55",
-      });
+Future<Hotel> fetchHotel() async {
+  final response = await http
+      .get(Uri.parse('https://api.makcorps.com/free/bordeaux'), headers: {
+    "Authorization":
+        "JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2NDEyNTM5MjUsImlhdCI6MTY0MTI1MjEyNSwibmJmIjoxNjQxMjUyMTI1LCJpZGVudGl0eSI6MTA1Nn0.pWKlFIEZeYtI-I07wsUZhUCnF393rU3ytDZ9KU-7Y4w"
+  });
 
   if (response.statusCode == 200) {
-    String receivedJson = response.body;
-    List<dynamic> list = json.decode(receivedJson);
-    return list;
+    // String receivedJson = response.body;
+    // List<dynamic> list = json.decode(receivedJson);
+    // return list;
+    return Hotel.fromJson(jsonDecode(response.body));
   } else {
     throw Exception('Failed to load hotel');
   }
@@ -185,7 +197,7 @@ class HotelSection extends StatefulWidget {
 }
 
 class _HotelSectionState extends State<HotelSection> {
-  late Future<List> futureHotel;
+  late Future<Hotel> futureHotel;
 
   @override
   void initState() {
@@ -220,60 +232,67 @@ class _HotelSectionState extends State<HotelSection> {
 
   Widget build(BuildContext context) {
     return Container(
-        padding: EdgeInsets.all(10),
-        color: Colors.white,
-        child: Column(children: [
-          Container(
-              color: Colors.white,
-              height: 50,
-              child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text('500 hotels trouvés',
-                        style: TextStyle(color: Colors.black)),
-                    Row(
-                      children: const [
-                        IconButton(
-                            onPressed: null,
-                            icon: Icon(Icons.filter_list_outlined,
-                                color: Colors.green, size: 25)),
-                        Text('Filtres', style: TextStyle(color: Colors.black))
-                      ],
-                    )
-                  ])),
-          // Column(
-          //   children: hotelList.map((hotel) {
-          //     return HotelCard(hotel);
-          //   }).toList(),
-          // ),
-          Column(
-            children: [
-              FutureBuilder<List>(
-                future: futureHotel,
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    // return Text(snapshot.data![1]['itemName']);
-                    return Column(
-                      children: snapshot.data!.map((hotel) {
-                        return HotelCard(hotel);
-                      }).toList(),
-                    );
-                  } else if (snapshot.hasError) {
-                    return Text('${snapshot.error}');
+      padding: EdgeInsets.all(10),
+      color: Colors.white,
+      child: Column(children: [
+        Container(
+            color: Colors.white,
+            height: 50,
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text('500 hotels trouvés',
+                      style: TextStyle(color: Colors.black)),
+                  Row(
+                    children: const [
+                      IconButton(
+                          onPressed: null,
+                          icon: Icon(Icons.filter_list_outlined,
+                              color: Colors.green, size: 25)),
+                      Text('Filtres', style: TextStyle(color: Colors.black))
+                    ],
+                  )
+                ])),
+        // Column(
+        //   children: hotelList.map((hotel) {
+        //     return HotelCard(hotel);
+        //   }).toList(),
+        // ),
+        Column(
+          children: [
+            FutureBuilder<Hotel>(
+              future: futureHotel,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  snapshot.data!.list.removeLast();
+                  // return Text(snapshot.data!.list[0][0]['hotelName']);
+                  var cleanResponse = [];
+                  for (var i = 0; i < snapshot.data!.list.length; i++) {
+                    cleanResponse.add(snapshot.data!.list[i][0]);
                   }
+                  // return HotelCard(snapshot.data!.list[0]);
+                  return Column(
+                    children: snapshot.data!.list.map((hotel) {
+                      return HotelCard(hotel);
+                    }).toList(),
+                  );
+                } else if (snapshot.hasError) {
+                  return Text('${snapshot.error}');
+                }
 
-                  // By default, show a loading spinner.
-                  return const CircularProgressIndicator();
-                },
-              ),
-            ],
-          ),
-        ]));
+                // By default, show a loading spinner.
+                return const CircularProgressIndicator();
+              },
+            ),
+          ],
+        ),
+      ]),
+    );
   }
 }
 
 class HotelCard extends StatelessWidget {
-  final Map hotelData;
+  final List hotelData;
   HotelCard(this.hotelData);
 
   @override
@@ -327,7 +346,7 @@ class HotelCard extends StatelessWidget {
               ],
             ),
           ),
-          Text(this.hotelData["itemName"])
+          Text(this.hotelData[0]["hotelName"])
         ],
       ),
     );
