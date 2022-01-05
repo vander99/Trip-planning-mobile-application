@@ -29,6 +29,7 @@ import 'package:http/http.dart' as http;
 
 class HotelPage extends StatefulWidget {
   const HotelPage({Key? key}) : super(key: key);
+  static String route = "hotel_page";
 
   @override
   _HotelPage createState() => _HotelPage();
@@ -38,7 +39,7 @@ Future<Hotel> fetchHotel(String city) async {
   var url = 'https://api.makcorps.com/free/' + city;
   final response = await http.get(Uri.parse(url), headers: {
     "Authorization":
-        "JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2NDEzOTY1MzMsImlhdCI6MTY0MTM5NDczMywibmJmIjoxNjQxMzk0NzMzLCJpZGVudGl0eSI6MTA1Nn0.T5kBUVnpbArtfwAGg8u9aLNVkwRNxAIoT1phnDo9oMs"
+        "JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2NDE0MDIzODcsImlhdCI6MTY0MTQwMDU4NywibmJmIjoxNjQxNDAwNTg3LCJpZGVudGl0eSI6MTA1Nn0.rnrQ4z33C6W6rc2toCqeNyskeGdPopedVVN7C2no4ZY"
   });
   if (response.statusCode == 200) {
     return Hotel.fromJson(jsonDecode(response.body));
@@ -50,17 +51,15 @@ Future<Hotel> fetchHotel(String city) async {
 class _HotelPage extends State<HotelPage> {
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Hotels Bookings',
-      home: HomePage(),
+    return const Scaffold(
+      body: HomePage(),
     );
   }
 }
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
-
+  static String route = "hotel_page";
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -88,18 +87,19 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      elevation: 1,
       leading: IconButton(
         icon: Icon(
           Icons.arrow_back,
-          color: Colors.grey[800],
-          size: 20,
+          color: Colors.green,
         ),
         onPressed: () {
           Navigator.of(context).pop();
         },
       ),
       title: Text(
-        text,
+        "Choose your hostel",
         style: const TextStyle(
           color: Colors.black,
           fontSize: 22,
@@ -107,7 +107,7 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
         ),
       ),
       centerTitle: true,
-      backgroundColor: Colors.white,
+      //backgroundColor: Colors.white,
     );
   }
 }

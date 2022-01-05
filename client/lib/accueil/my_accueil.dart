@@ -12,10 +12,8 @@ class MyHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Hotels Bookings',
-      home: HomePage(),
+    return Scaffold(
+      body: HomePage(),
     );
   }
 }
@@ -200,12 +198,7 @@ class HotelSection extends StatelessWidget {
                     children: [
                       GestureDetector(
                           onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => HotelPage(),
-                              ),
-                            );
+                            Navigator.pushNamed(context, "hotel_page");
                           },
                           child: Container(
                               height: 200,
