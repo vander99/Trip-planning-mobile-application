@@ -30,15 +30,24 @@ class HomePageState extends State<HomePage> {
         currentIndex: this.selectedIndex,
         items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
+            icon: Icon(
+              Icons.home,
+              color: Colors.green,
+            ),
             title: Text("Home"),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.flight),
+            icon: Icon(
+              Icons.flight,
+              color: Colors.green,
+            ),
             title: Text("Espace voyage"),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.account_circle_outlined),
+            icon: Icon(
+              Icons.account_circle_outlined,
+              color: Colors.green,
+            ),
             title: Text("Profile"),
           )
         ],

@@ -59,6 +59,12 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
 }
 
 class SearchSection extends StatelessWidget {
+  final myController = TextEditingController();
+
+  void dispose() {
+    myController.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -80,7 +86,8 @@ class SearchSection extends StatelessWidget {
                               offset: Offset(0, 3))
                         ],
                       ),
-                      child: const TextField(
+                      child: TextField(
+                        controller: myController,
                         decoration: InputDecoration(
                             hintText: 'Trouver une ville',
                             contentPadding: EdgeInsets.all(10),
@@ -98,7 +105,11 @@ class SearchSection extends StatelessWidget {
                     ),
                   ], borderRadius: BorderRadius.all(Radius.circular(25))),
                   child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.pushNamed(context, "hotel_page", arguments: {
+                          "cityName": myController.text,
+                        });
+                      },
                       child: const Icon(
                         Icons.search,
                         size: 26,

@@ -40,7 +40,7 @@ Future<Hotel> fetchHotel(String city) async {
   var url = 'https://api.makcorps.com/free/' + cityName;
   final response = await http.get(Uri.parse(url), headers: {
     "Authorization":
-        "JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2NDE0MDc1MTEsImlhdCI6MTY0MTQwNTcxMSwibmJmIjoxNjQxNDA1NzExLCJpZGVudGl0eSI6MTA1Nn0.oHdccyFsczQGILnl6JBHsq7yOEJffVXp7TJuHTpff6U"
+        "JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2NDE0MTUxOTIsImlhdCI6MTY0MTQxMzM5MiwibmJmIjoxNjQxNDEzMzkyLCJpZGVudGl0eSI6MTA1Nn0.LS8-4PAO3J0g6AY9kllEFhi2OVN0fJvNmkXznx8DNW8"
   });
   if (response.statusCode == 200) {
     return Hotel.fromJson(jsonDecode(response.body));
