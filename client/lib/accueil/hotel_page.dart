@@ -26,6 +26,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 // ignore: constant_identifier_names
+String cityName = "";
 
 class HotelPage extends StatefulWidget {
   const HotelPage({Key? key}) : super(key: key);
@@ -36,10 +37,10 @@ class HotelPage extends StatefulWidget {
 }
 
 Future<Hotel> fetchHotel(String city) async {
-  var url = 'https://api.makcorps.com/free/' + city;
+  var url = 'https://api.makcorps.com/free/' + cityName;
   final response = await http.get(Uri.parse(url), headers: {
     "Authorization":
-        "JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2NDE0MDIzODcsImlhdCI6MTY0MTQwMDU4NywibmJmIjoxNjQxNDAwNTg3LCJpZGVudGl0eSI6MTA1Nn0.rnrQ4z33C6W6rc2toCqeNyskeGdPopedVVN7C2no4ZY"
+        "JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2NDE0MDc1MTEsImlhdCI6MTY0MTQwNTcxMSwibmJmIjoxNjQxNDA1NzExLCJpZGVudGl0eSI6MTA1Nn0.oHdccyFsczQGILnl6JBHsq7yOEJffVXp7TJuHTpff6U"
   });
   if (response.statusCode == 200) {
     return Hotel.fromJson(jsonDecode(response.body));
@@ -67,6 +68,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
+    final arguments = ModalRoute.of(context)!.settings.arguments as Map;
+    cityName = arguments['cityName'];
     return Scaffold(
       appBar: MyAppBar(text: "Explore"),
       body: SingleChildScrollView(

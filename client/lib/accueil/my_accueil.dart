@@ -198,7 +198,10 @@ class HotelSection extends StatelessWidget {
                     children: [
                       GestureDetector(
                           onTap: () {
-                            Navigator.pushNamed(context, "hotel_page");
+                            Navigator.pushNamed(context, "hotel_page",
+                                arguments: {
+                                  "cityName": hotelList[index]['place']
+                                });
                           },
                           child: Container(
                               height: 200,
