@@ -25,22 +25,20 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-import 'hotel.dart';
-
 // ignore: constant_identifier_names
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key}) : super(key: key);
+class HotelPage extends StatefulWidget {
+  const HotelPage({Key? key}) : super(key: key);
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  _HotelPage createState() => _HotelPage();
 }
 
 Future<Hotel> fetchHotel(String city) async {
   var url = 'https://api.makcorps.com/free/' + city;
   final response = await http.get(Uri.parse(url), headers: {
     "Authorization":
-        "JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2NDEzOTE0MjAsImlhdCI6MTY0MTM4OTYyMCwibmJmIjoxNjQxMzg5NjIwLCJpZGVudGl0eSI6MTA1Nn0.AFrCrEuXeeYHi1rDJqL9gSnTU4bdSmXpQ_Cw05M5htA"
+        "JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2NDEzOTY1MzMsImlhdCI6MTY0MTM5NDczMywibmJmIjoxNjQxMzk0NzMzLCJpZGVudGl0eSI6MTA1Nn0.T5kBUVnpbArtfwAGg8u9aLNVkwRNxAIoT1phnDo9oMs"
   });
   if (response.statusCode == 200) {
     return Hotel.fromJson(jsonDecode(response.body));
@@ -49,7 +47,7 @@ Future<Hotel> fetchHotel(String city) async {
   }
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _HotelPage extends State<HotelPage> {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
@@ -329,5 +327,20 @@ class HotelCard extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+class Hotel {
+  List<dynamic> list;
+
+  Hotel(this.list);
+
+  factory Hotel.fromJson(dynamic json) {
+    return Hotel(json['Comparison'] as List<dynamic>);
+  }
+
+  @override
+  String toString() {
+    return '{ ${this.list} }';
   }
 }

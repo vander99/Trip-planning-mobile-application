@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/src/provider.dart';
 
 import 'package:client/my_espace_voyage.dart';
-import 'package:client/my_home_page.dart';
+import 'package:client/accueil/my_accueil.dart';
 import 'package:client/profile/my_profile.dart';
 
 class HomePage extends StatefulWidget {
