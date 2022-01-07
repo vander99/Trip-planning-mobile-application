@@ -210,62 +210,64 @@ class HotelSection extends StatelessWidget {
                   child: Column(
                     children: [
                       GestureDetector(
-                          onTap: () {
-                            Navigator.pushNamed(context, "hotel_page",
-                                arguments: {
-                                  "cityName": hotelList[index]['place']
-                                });
-                          },
-                          child: Container(
-                              height: 200,
-                              decoration: BoxDecoration(
-                                //onTap: (),
-                                borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(18),
-                                  topRight: Radius.circular(18),
-                                ),
-                                image: DecorationImage(
-                                  //onTap: (),
-                                  image:
-                                      NetworkImage(hotelList[index]['picture']),
-                                  fit: BoxFit.cover,
+                        onTap: () {
+                          Navigator.pushNamed(context, "hotel_page",
+                              arguments: {
+                                "cityName": hotelList[index]['place']
+                              });
+                        },
+                        child: Container(
+                          height: 200,
+                          decoration: BoxDecoration(
+                            //onTap: (),
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(18),
+                              topRight: Radius.circular(18),
+                            ),
+                            image: DecorationImage(
+                              //onTap: (),
+                              image: NetworkImage(hotelList[index]['picture']),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          child: Stack(
+                            children: [
+                              Positioned(
+                                top: 5,
+                                child: MaterialButton(
+                                    onPressed: () {},
+                                    shape: const CircleBorder(),
+                                    color: Colors.white,
+                                    child: const Icon(
+                                      Icons.favorite_outline_rounded,
+                                      size: 20,
+                                    )),
+                              ),
+                              Positioned(
+                                  bottom: 40,
+                                  left: 15,
+                                  child: Text(
+                                    'Visiter ${hotelList[index]['place']}.',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                        fontSize: 22),
+                                  )),
+                              Positioned(
+                                bottom: 10,
+                                left: 15,
+                                child: Text(
+                                  'Découvrir.',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w300,
+                                      color: Colors.white,
+                                      fontSize: 18),
                                 ),
                               ),
-                              child: Stack(
-                                children: [
-                                  Positioned(
-                                    top: 5,
-                                    child: MaterialButton(
-                                        onPressed: () {},
-                                        shape: const CircleBorder(),
-                                        color: Colors.white,
-                                        child: const Icon(
-                                          Icons.favorite_outline_rounded,
-                                          size: 20,
-                                        )),
-                                  ),
-                                  Positioned(
-                                      bottom: 40,
-                                      left: 15,
-                                      child: Text(
-                                        'Visiter ${hotelList[index]['place']}.',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white,
-                                            fontSize: 22),
-                                      )),
-                                  Positioned(
-                                      bottom: 10,
-                                      left: 15,
-                                      child: Text(
-                                        'Découvrir.',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.w300,
-                                            color: Colors.white,
-                                            fontSize: 18),
-                                      )),
-                                ],
-                              )))
+                            ],
+                          ),
+                        ),
+                      )
                     ],
                   ));
             }).toList(),

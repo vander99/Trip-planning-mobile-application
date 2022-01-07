@@ -24,33 +24,41 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:geocoding/geocoding.dart';
 
 // ignore: constant_identifier_names
 String cityName = "";
 
-class HotelPage extends StatefulWidget {
-  const HotelPage({Key? key}) : super(key: key);
-  static String route = "hotel_page";
+class RestaurantPage extends StatefulWidget {
+  const RestaurantPage({Key? key}) : super(key: key);
+  static String route = "Restaurant_page";
 
   @override
-  _HotelPage createState() => _HotelPage();
+  _RestaurantPage createState() => _RestaurantPage();
 }
 
-Future<Hotel> fetchHotel(String city) async {
-  print(cityName);
-  var url = 'https://api.makcorps.com/free/' + cityName;
+Future<Restaurant> fetchRestaurant(String city) async {
+  List<Location> locations = await locationFromAddress(cityName);
+  var lat = locations[0].latitude.toString();
+  var lon = locations[0].longitude.toString();
+  var url =
+      'https://travel-advisor.p.rapidapi.com/restaurants/list-by-latlng?distance=2&lunit=km&currency=USD&lang=fr_FR&limit=50&latitude=' +
+          lat +
+          '&longitude=' +
+          lon +
+          '&open_now=false';
   final response = await http.get(Uri.parse(url), headers: {
-    "Authorization":
-        "JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2NDE1OTczODgsImlhdCI6MTY0MTU5NTU4OCwibmJmIjoxNjQxNTk1NTg4LCJpZGVudGl0eSI6MTA1Nn0.sQx3xKPE7XUxeJqlKWy98NX01ZLdW9HU5lU7qXZ6Gsw"
+    "x-rapidapi-host": "travel-advisor.p.rapidapi.com",
+    "x-rapidapi-key": "8da6724a93msh2894fa97e7a2e57p13d12fjsn61de0eb7ba55",
   });
   if (response.statusCode == 200) {
-    return Hotel.fromJson(jsonDecode(response.body));
+    return Restaurant.fromJson(jsonDecode(response.body));
   } else {
-    throw Exception('Failed to load hotel');
+    throw Exception('Failed to load Restaurant');
   }
 }
 
-class _HotelPage extends State<HotelPage> {
+class _RestaurantPage extends State<RestaurantPage> {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
@@ -61,7 +69,7 @@ class _HotelPage extends State<HotelPage> {
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
-  //static String route = "hotel_page";
+  static String route = "Restaurant_page";
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -71,11 +79,10 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final arguments = ModalRoute.of(context)!.settings.arguments as Map;
     cityName = arguments['cityName'];
-    print("argument: " + arguments['cityName']);
     return Scaffold(
       appBar: MyAppBar(text: "Explore"),
       body: SingleChildScrollView(
-        child: HotelSection(),
+        child: RestaurantSection(),
       ),
     );
   }
@@ -104,7 +111,7 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
         },
       ),
       title: Text(
-        "Choose your hostel",
+        "Choose your restaurant",
         style: const TextStyle(
           color: Colors.black,
           fontSize: 22,
@@ -117,13 +124,13 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 }
 
-class HotelSection extends StatefulWidget {
+class RestaurantSection extends StatefulWidget {
   @override
-  _HotelSectionState createState() => _HotelSectionState();
+  _RestaurantSectionState createState() => _RestaurantSectionState();
 }
 
-class _HotelSectionState extends State<HotelSection> {
-  late Future<Hotel> futureHotel;
+class _RestaurantSectionState extends State<RestaurantSection> {
+  late Future<Restaurant> futureRestaurant;
   final myController = TextEditingController();
 
   @override
@@ -135,7 +142,7 @@ class _HotelSectionState extends State<HotelSection> {
   @override
   void initState() {
     super.initState();
-    futureHotel = fetchHotel("bordeaux");
+    futureRestaurant = fetchRestaurant("bordeaux");
   }
 
   @override
@@ -188,7 +195,7 @@ class _HotelSectionState extends State<HotelSection> {
                     child: ElevatedButton(
                       onPressed: () {
                         setState(() {
-                          futureHotel = fetchHotel(myController.text);
+                          futureRestaurant = fetchRestaurant(myController.text);
                         });
                       },
                       child: const Icon(
@@ -232,7 +239,7 @@ class _HotelSectionState extends State<HotelSection> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('500 hotels trouvés',
+              const Text('500 Restaurants trouvés',
                   style: TextStyle(color: Colors.black)),
               Row(
                 children: const [
@@ -248,14 +255,27 @@ class _HotelSectionState extends State<HotelSection> {
         ),
         Column(
           children: [
-            FutureBuilder<Hotel>(
-              future: futureHotel,
+            FutureBuilder<Restaurant>(
+              future: futureRestaurant,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   snapshot.data!.list.removeLast();
                   return Column(
-                    children: snapshot.data!.list.map((hotel) {
-                      return HotelCard(hotel);
+                    children: snapshot.data!.list.map((restaurant) {
+                      var restaurantData = [];
+                      if (restaurant["name"] != null) {
+                        restaurantData.add(restaurant["name"]);
+                      } else {
+                        restaurantData.add("unknown");
+                      }
+                      try {
+                        restaurantData.add(
+                            restaurant["photo"]["images"]["original"]["url"]);
+                      } catch (e) {
+                        restaurantData.add(
+                            "https://aeroclub-issoire.fr/wp-content/uploads/2020/05/image-not-found-300x225.jpg");
+                      }
+                      return RestaurantCard(restaurantData);
                     }).toList(),
                   );
                 } else if (snapshot.hasError) {
@@ -273,81 +293,74 @@ class _HotelSectionState extends State<HotelSection> {
   }
 }
 
-class HotelCard extends StatelessWidget {
-  final List hotelData;
-  HotelCard(this.hotelData);
+class RestaurantCard extends StatelessWidget {
+  final List RestaurantData;
+  RestaurantCard(this.RestaurantData);
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.pushNamed(context, "Restaurant_page",
-            arguments: {"cityName": cityName});
-      },
-      child: Container(
-        // child: Image.network(hotelData['picture'])
-        height: 230,
-        margin: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          color: Colors.blue,
-          borderRadius: const BorderRadius.all(
-            Radius.circular(18),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.shade200,
-              spreadRadius: 4,
-              blurRadius: 6,
-              offset: const Offset(0, 3),
-            )
-          ],
+    return Container(
+      // child: Image.network(RestaurantData['picture'])
+      height: 230,
+      margin: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: Colors.blue,
+        borderRadius: const BorderRadius.all(
+          Radius.circular(18),
         ),
-        child: Column(
-          children: [
-            Container(
-              height: 140,
-              decoration: const BoxDecoration(
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(18),
-                  topRight: Radius.circular(18),
-                ),
-                image: DecorationImage(
-                  image: NetworkImage(
-                      'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg'),
-                  fit: BoxFit.cover,
-                ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.shade200,
+            spreadRadius: 4,
+            blurRadius: 6,
+            offset: const Offset(0, 3),
+          )
+        ],
+      ),
+      child: Column(
+        children: [
+          Container(
+            height: 140,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(18),
+                topRight: Radius.circular(18),
               ),
-              child: Stack(
-                children: [
-                  Positioned(
-                    top: 5,
-                    child: MaterialButton(
-                        onPressed: () {},
-                        shape: const CircleBorder(),
-                        color: Colors.white,
-                        child: const Icon(
-                          Icons.favorite_outline_rounded,
-                          size: 20,
-                        )),
-                  )
-                ],
+              image: DecorationImage(
+                image: NetworkImage(RestaurantData[1]),
+                fit: BoxFit.cover,
               ),
             ),
-            Text(this.hotelData[0]["hotelName"])
-          ],
-        ),
+            child: Stack(
+              children: [
+                Positioned(
+                  top: 5,
+                  child: MaterialButton(
+                      onPressed: () {},
+                      shape: const CircleBorder(),
+                      color: Colors.white,
+                      child: const Icon(
+                        Icons.favorite_outline_rounded,
+                        size: 20,
+                      )),
+                )
+              ],
+            ),
+          ),
+          Text(this.RestaurantData[0])
+        ],
       ),
     );
   }
 }
 
-class Hotel {
+class Restaurant {
   List<dynamic> list;
 
-  Hotel(this.list);
+  Restaurant(this.list);
 
-  factory Hotel.fromJson(dynamic json) {
-    return Hotel(json['Comparison'] as List<dynamic>);
+  factory Restaurant.fromJson(dynamic json) {
+    return Restaurant(json['data'] as List<dynamic>);
   }
 
   @override
