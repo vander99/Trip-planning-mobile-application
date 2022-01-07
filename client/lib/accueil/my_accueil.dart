@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/src/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'package:table_calendar/table_calendar.dart';
+
 import 'hotel_page.dart';
 
 // ignore: constant_identifier_names

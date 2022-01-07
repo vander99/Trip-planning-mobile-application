@@ -28,21 +28,22 @@ import 'package:http/http.dart' as http;
 // ignore: constant_identifier_names
 String cityName = "";
 
-class HotelPage extends StatefulWidget {
-  const HotelPage({Key? key}) : super(key: key);
-  static String route = "hotel_page";
+class HotelPageReserv extends StatefulWidget {
+  const HotelPageReserv({Key? key}) : super(key: key);
+  static String route = "reserve_hotel";
 
   @override
-  _HotelPage createState() => _HotelPage();
+  _HotelPageReserv createState() => _HotelPageReserv();
 }
 
 Future<Hotel> fetchHotel(String city) async {
-  print(cityName);
+  print("cityName: " + cityName);
   var url = 'https://api.makcorps.com/free/' + cityName;
   final response = await http.get(Uri.parse(url), headers: {
     "Authorization":
-        "JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2NDE1NzM4MTUsImlhdCI6MTY0MTU3MjAxNSwibmJmIjoxNjQxNTcyMDE1LCJpZGVudGl0eSI6MTA1Nn0.RNBl3E_b6uOLZ18n2V-iQJgevaT0nvKdVQjAhrJppzU"
+        "JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2NDE1NzU5MjUsImlhdCI6MTY0MTU3NDEyNSwibmJmIjoxNjQxNTc0MTI1LCJpZGVudGl0eSI6MTA1Nn0.RLVKMWzoKqMLUfocv6OO20D5IQxPFvGYfpTGRDtXh1s"
   });
+  print(response.statusCode);
   if (response.statusCode == 200) {
     return Hotel.fromJson(jsonDecode(response.body));
   } else {
@@ -50,7 +51,7 @@ Future<Hotel> fetchHotel(String city) async {
   }
 }
 
-class _HotelPage extends State<HotelPage> {
+class _HotelPageReserv extends State<HotelPageReserv> {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
@@ -61,7 +62,7 @@ class _HotelPage extends State<HotelPage> {
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
-  //static String route = "hotel_page";
+  static String route = "reserve_hotel";
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -71,7 +72,6 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final arguments = ModalRoute.of(context)!.settings.arguments as Map;
     cityName = arguments['cityName'];
-    print("argument: " + arguments['cityName']);
     return Scaffold(
       appBar: MyAppBar(text: "Explore"),
       body: SingleChildScrollView(

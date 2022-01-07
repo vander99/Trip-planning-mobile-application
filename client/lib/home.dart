@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/src/provider.dart';
 
 import 'package:client/my_espace_voyage.dart';
+import 'package:client/espaceVoyage/mainpage.dart';
 import 'package:client/accueil/my_accueil.dart';
 import 'package:client/profile/my_profile.dart';
 
@@ -18,7 +19,8 @@ class HomePage extends StatefulWidget {
 class HomePageState extends State<HomePage> {
   int selectedIndex = 0;
   Widget _myHome = MyHomePage();
-  Widget _myEspaceVoyage = MyEspaceVoyage();
+  Widget _myEspaceVoyage = /*MyEspaceVoyage()*/ MainPage(
+      title: "Espace voyage");
   Widget _myProfile = MyProfile();
 
   @override
