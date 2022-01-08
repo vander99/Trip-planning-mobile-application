@@ -29,36 +29,31 @@ import 'package:geocoding/geocoding.dart';
 // ignore: constant_identifier_names
 String cityName = "";
 
-class RestaurantPage extends StatefulWidget {
-  const RestaurantPage({Key? key}) : super(key: key);
-  static String route = "Restaurant_page";
+class AttractionPage extends StatefulWidget {
+  const AttractionPage({Key? key}) : super(key: key);
+  static String route = "Attraction_page";
 
   @override
-  _RestaurantPage createState() => _RestaurantPage();
+  _AttractionPage createState() => _AttractionPage();
 }
 
-Future<Restaurant> fetchRestaurant(String city) async {
-  List<Location> locations = await locationFromAddress(cityName);
-  var lat = locations[0].latitude.toString();
-  var lon = locations[0].longitude.toString();
-  var url =
-      'https://travel-advisor.p.rapidapi.com/restaurants/list-by-latlng?distance=2&lunit=km&currency=USD&lang=fr_FR&limit=50&latitude=' +
-          lat +
-          '&longitude=' +
-          lon +
-          '&open_now=false';
+Future<Attraction> fetchAttraction(String city) async {
+  var url = 'https://tripadvisor1.p.rapidapi.com/locations/search?query=' +
+      cityName +
+      '&lang=fr_FR&units=km&location_id=1&currency=USD&limit=50&offset=0&sort=relevance';
   final response = await http.get(Uri.parse(url), headers: {
     "x-rapidapi-host": "travel-advisor.p.rapidapi.com",
     "x-rapidapi-key": "8da6724a93msh2894fa97e7a2e57p13d12fjsn61de0eb7ba55",
   });
+
   if (response.statusCode == 200) {
-    return Restaurant.fromJson(jsonDecode(utf8.decode(response.bodyBytes)));
+    return Attraction.fromJson(jsonDecode(utf8.decode(response.bodyBytes)));
   } else {
-    throw Exception('Failed to load Restaurant');
+    throw Exception('Failed to load Attraction');
   }
 }
 
-class _RestaurantPage extends State<RestaurantPage> {
+class _AttractionPage extends State<AttractionPage> {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
@@ -69,7 +64,7 @@ class _RestaurantPage extends State<RestaurantPage> {
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
-  static String route = "Restaurant_page";
+  static String route = "Attraction_page";
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -82,7 +77,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: MyAppBar(text: "Explore"),
       body: SingleChildScrollView(
-        child: RestaurantSection(),
+        child: AttractionSection(),
       ),
     );
   }
@@ -111,7 +106,7 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
         },
       ),
       title: Text(
-        "Choose your restaurant",
+        "Choose your attraction",
         style: const TextStyle(
           color: Colors.black,
           fontSize: 22,
@@ -124,13 +119,13 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 }
 
-class RestaurantSection extends StatefulWidget {
+class AttractionSection extends StatefulWidget {
   @override
-  _RestaurantSectionState createState() => _RestaurantSectionState();
+  _AttractionSectionState createState() => _AttractionSectionState();
 }
 
-class _RestaurantSectionState extends State<RestaurantSection> {
-  late Future<Restaurant> futureRestaurant;
+class _AttractionSectionState extends State<AttractionSection> {
+  late Future<Attraction> futureAttraction;
   final myController = TextEditingController();
 
   @override
@@ -142,7 +137,7 @@ class _RestaurantSectionState extends State<RestaurantSection> {
   @override
   void initState() {
     super.initState();
-    futureRestaurant = fetchRestaurant("bordeaux");
+    futureAttraction = fetchAttraction("bordeaux");
   }
 
   @override
@@ -195,7 +190,7 @@ class _RestaurantSectionState extends State<RestaurantSection> {
                     child: ElevatedButton(
                       onPressed: () {
                         setState(() {
-                          futureRestaurant = fetchRestaurant(myController.text);
+                          futureAttraction = fetchAttraction(myController.text);
                         });
                       },
                       child: const Icon(
@@ -239,7 +234,7 @@ class _RestaurantSectionState extends State<RestaurantSection> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('500 Restaurants trouvés',
+              const Text('500 Attractions trouvés',
                   style: TextStyle(color: Colors.black)),
               Row(
                 children: const [
@@ -255,28 +250,28 @@ class _RestaurantSectionState extends State<RestaurantSection> {
         ),
         Column(
           children: [
-            FutureBuilder<Restaurant>(
-              future: futureRestaurant,
+            FutureBuilder<Attraction>(
+              future: futureAttraction,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  snapshot.data!.list.removeLast();
+                  List<Widget> filtredData = [];
+                  for (var i = 0; i < snapshot.data!.list.length; i++) {
+                    if (snapshot.data!.list[i]['result_type'] == "activities" ||
+                        snapshot.data!.list[i]['result_type'] ==
+                            "things_to_do") {
+                      var activityData = [];
+                      activityData
+                          .add(snapshot.data!.list[i]['result_object']['name']);
+
+                      activityData.add(snapshot.data!.list[i]['result_object']
+                          ['photo']['images']['original']['url']);
+
+                      filtredData.add(AttractionCard(activityData));
+                    }
+                  }
+
                   return Column(
-                    children: snapshot.data!.list.map((restaurant) {
-                      var restaurantData = [];
-                      if (restaurant["name"] != null) {
-                        restaurantData.add(restaurant["name"]);
-                      } else {
-                        restaurantData.add("unknown");
-                      }
-                      try {
-                        restaurantData.add(
-                            restaurant["photo"]["images"]["original"]["url"]);
-                      } catch (e) {
-                        restaurantData.add(
-                            "https://aeroclub-issoire.fr/wp-content/uploads/2020/05/image-not-found-300x225.jpg");
-                      }
-                      return RestaurantCard(restaurantData);
-                    }).toList(),
+                    children: filtredData,
                   );
                 } else if (snapshot.hasError) {
                   return Text('${snapshot.error}');
@@ -293,80 +288,74 @@ class _RestaurantSectionState extends State<RestaurantSection> {
   }
 }
 
-class RestaurantCard extends StatelessWidget {
-  final List RestaurantData;
-  RestaurantCard(this.RestaurantData);
+class AttractionCard extends StatelessWidget {
+  final List AttractionData;
+  AttractionCard(this.AttractionData);
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.pushNamed(context, "Attraction_page",
-            arguments: {"cityName": cityName});
-      },
-      child: Container(
-        // child: Image.network(RestaurantData['picture'])
-        height: 230,
-        margin: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          color: Colors.blue,
-          borderRadius: const BorderRadius.all(
-            Radius.circular(18),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.shade200,
-              spreadRadius: 4,
-              blurRadius: 6,
-              offset: const Offset(0, 3),
-            )
-          ],
+    return Container(
+      // child: Image.network(AttractionData['picture'])
+      height: 230,
+      margin: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: Colors.blue,
+        borderRadius: const BorderRadius.all(
+          Radius.circular(18),
         ),
-        child: Column(
-          children: [
-            Container(
-              height: 140,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(18),
-                  topRight: Radius.circular(18),
-                ),
-                image: DecorationImage(
-                  image: NetworkImage(RestaurantData[1]),
-                  fit: BoxFit.cover,
-                ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.shade200,
+            spreadRadius: 4,
+            blurRadius: 6,
+            offset: const Offset(0, 3),
+          )
+        ],
+      ),
+      child: Column(
+        children: [
+          Container(
+            height: 140,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(18),
+                topRight: Radius.circular(18),
               ),
-              child: Stack(
-                children: [
-                  Positioned(
-                    top: 5,
-                    child: MaterialButton(
-                        onPressed: () {},
-                        shape: const CircleBorder(),
-                        color: Colors.white,
-                        child: const Icon(
-                          Icons.favorite_outline_rounded,
-                          size: 20,
-                        )),
-                  )
-                ],
+              image: DecorationImage(
+                image: NetworkImage(AttractionData[1]),
+                fit: BoxFit.cover,
               ),
             ),
-            Text(this.RestaurantData[0])
-          ],
-        ),
+            child: Stack(
+              children: [
+                Positioned(
+                  top: 5,
+                  child: MaterialButton(
+                      onPressed: () {},
+                      shape: const CircleBorder(),
+                      color: Colors.white,
+                      child: const Icon(
+                        Icons.favorite_outline_rounded,
+                        size: 20,
+                      )),
+                )
+              ],
+            ),
+          ),
+          Text(this.AttractionData[0])
+        ],
       ),
     );
   }
 }
 
-class Restaurant {
+class Attraction {
   List<dynamic> list;
 
-  Restaurant(this.list);
+  Attraction(this.list);
 
-  factory Restaurant.fromJson(dynamic json) {
-    return Restaurant(json['data'] as List<dynamic>);
+  factory Attraction.fromJson(dynamic json) {
+    return Attraction(json['data'] as List<dynamic>);
   }
 
   @override
