@@ -1,18 +1,3 @@
-/*
-
-taper sur un terminal :
-      curl --request POST \
-         --url 'https://api.makcorps.com/auth' \
-         --header 'Content-Type: application/json' \
-         --data '{
-              "username":"tsafira",
-              "password":"azerty123"
-      }'
-
-
-Puis récupérer le token et le remplacer dans le parametre Authorization ligne 43 
-*/
-
 import 'dart:io';
 
 import 'package:client/authentication_service.dart';
@@ -36,13 +21,29 @@ class HotelPage extends StatefulWidget {
   _HotelPage createState() => _HotelPage();
 }
 
+Future<String> fetchAuthToken() async {
+  var url = 'https://api.makcorps.com/auth';
+  final response = await http.post(Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(
+          <String, String>{"username": "tsafira", "password": "azerty123"}));
+
+  if (response.statusCode == 200) {
+    return jsonDecode(response.body)["access_token"];
+  } else {
+    throw Exception('Failed to fetch token');
+  }
+}
+
 Future<Hotel> fetchHotel(String city) async {
   print(cityName);
   var url = 'https://api.makcorps.com/free/' + cityName;
-  final response = await http.get(Uri.parse(url), headers: {
-    "Authorization":
-        "JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2NDE1OTczODgsImlhdCI6MTY0MTU5NTU4OCwibmJmIjoxNjQxNTk1NTg4LCJpZGVudGl0eSI6MTA1Nn0.sQx3xKPE7XUxeJqlKWy98NX01ZLdW9HU5lU7qXZ6Gsw"
-  });
+  var token = await fetchAuthToken();
+  var auth = "JWT " + token;
+  final response =
+      await http.get(Uri.parse(url), headers: {"Authorization": auth});
   if (response.statusCode == 200) {
     return Hotel.fromJson(jsonDecode(response.body));
   } else {
