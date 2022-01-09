@@ -1,5 +1,6 @@
 import 'package:client/accueil/hotel_page.dart';
 import 'package:client/accueil/restaurant_page.dart';
+import 'package:client/accueil/attractions_page.dart';
 import 'package:client/espaceVoyage/nouveau_voyage/reserve_hotel.dart';
 import 'package:client/espaceVoyage/nouveau_voyage/reserve_restaurants.dart';
 import 'package:client/espaceVoyage/nouveau_voyage/start_form.dart';
@@ -20,6 +21,7 @@ getRoutes() {
     MesReglages.route: (context) => MesReglages(),
     HotelPage.route: (context) => HotelPage(),
     RestaurantPage.route: (context) => RestaurantPage(),
+    AttractionPage.route: (context) => AttractionPage(),
     HotelPageReserv.route: (context) => HotelPageReserv(),
     FormScreen.route: (context) => FormScreen(),
     ReserveRestaurant.route: (context) => ReserveRestaurant()
