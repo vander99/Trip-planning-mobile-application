@@ -14,12 +14,12 @@ import 'package:geocoding/geocoding.dart';
 // ignore: constant_identifier_names
 String cityName = "";
 
-class RestaurantPage extends StatefulWidget {
-  const RestaurantPage({Key? key}) : super(key: key);
-  static String route = "Restaurant_page";
+class ReserveRestaurant extends StatefulWidget {
+  const ReserveRestaurant({Key? key}) : super(key: key);
+  static String route = "reserve_restaurants";
 
   @override
-  _RestaurantPage createState() => _RestaurantPage();
+  _ReserveRestaurant createState() => _ReserveRestaurant();
 }
 
 Future<Restaurant> fetchRestaurant(String city) async {
@@ -43,7 +43,7 @@ Future<Restaurant> fetchRestaurant(String city) async {
   }
 }
 
-class _RestaurantPage extends State<RestaurantPage> {
+class _ReserveRestaurant extends State<ReserveRestaurant> {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
@@ -54,7 +54,7 @@ class _RestaurantPage extends State<RestaurantPage> {
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
-  static String route = "Restaurant_page";
+  //static String route = "Restaurant_page";
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -104,6 +104,7 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
         ),
       ),
       centerTitle: true,
+      //backgroundColor: Colors.white,
     );
   }
 }
@@ -284,6 +285,7 @@ class RestaurantCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+        // child: Image.network(hotelData['picture'])
         height: 220,
         margin: const EdgeInsets.all(10),
         decoration: BoxDecoration(

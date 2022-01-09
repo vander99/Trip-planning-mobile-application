@@ -27,6 +27,11 @@ import 'package:http/http.dart' as http;
 
 // ignore: constant_identifier_names
 String cityName = "";
+String budget = "";
+DateTime _dateTimeDeb = DateTime.now();
+DateTime _dateTimeFin = DateTime.now();
+String hotelName = "";
+String hotelPrice = "";
 
 class HotelPageReserv extends StatefulWidget {
   const HotelPageReserv({Key? key}) : super(key: key);
@@ -37,17 +42,31 @@ class HotelPageReserv extends StatefulWidget {
 }
 
 Future<Hotel> fetchHotel(String city) async {
-  print("cityName: " + cityName);
   var url = 'https://api.makcorps.com/free/' + cityName;
-  final response = await http.get(Uri.parse(url), headers: {
-    "Authorization":
-        "JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2NDE1NzU5MjUsImlhdCI6MTY0MTU3NDEyNSwibmJmIjoxNjQxNTc0MTI1LCJpZGVudGl0eSI6MTA1Nn0.RLVKMWzoKqMLUfocv6OO20D5IQxPFvGYfpTGRDtXh1s"
-  });
-  print(response.statusCode);
+  var token = await fetchAuthToken();
+  var auth = "JWT " + token;
+  final response =
+      await http.get(Uri.parse(url), headers: {"Authorization": auth});
   if (response.statusCode == 200) {
     return Hotel.fromJson(jsonDecode(response.body));
   } else {
     throw Exception('Failed to load hotel');
+  }
+}
+
+Future<String> fetchAuthToken() async {
+  var url = 'https://api.makcorps.com/auth';
+  final response = await http.post(Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(
+          <String, String>{"username": "tsafira", "password": "azerty123"}));
+
+  if (response.statusCode == 200) {
+    return jsonDecode(response.body)["access_token"];
+  } else {
+    throw Exception('Failed to fetch token');
   }
 }
 
@@ -72,6 +91,10 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final arguments = ModalRoute.of(context)!.settings.arguments as Map;
     cityName = arguments['cityName'];
+    budget = arguments['budget'];
+    _dateTimeDeb = arguments['dateDeb'];
+    _dateTimeFin = arguments['dateFin'];
+
     return Scaffold(
       appBar: MyAppBar(text: "Explore"),
       body: SingleChildScrollView(
@@ -140,136 +163,148 @@ class _HotelSectionState extends State<HotelSection> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(10),
-      color: Colors.white,
-      child: Column(children: [
-        Container(
-          color: Colors.grey[200],
-          padding: const EdgeInsets.fromLTRB(10, 45, 10, 10),
-          child: Column(
-            children: [
-              Row(
+    return GestureDetector(
+        onTap: () {
+          Navigator.pushNamed(context, "reserve_restaurants", arguments: {
+            "cityName": cityName,
+            "budget": budget,
+            "dateDeb": _dateTimeDeb,
+            "dateFin": _dateTimeFin,
+            "hotelName": hotelName,
+            "hotelPrice": hotelPrice,
+          });
+        },
+        child: Container(
+          padding: EdgeInsets.all(10),
+          color: Colors.white,
+          child: Column(children: [
+            Container(
+              color: Colors.grey[200],
+              padding: const EdgeInsets.fromLTRB(10, 45, 10, 10),
+              child: Column(
                 children: [
-                  Expanded(
-                    child: Container(
-                      padding: const EdgeInsets.only(left: 5),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(30),
-                        boxShadow: const [
-                          BoxShadow(
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.only(left: 5),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(30),
+                            boxShadow: const [
+                              BoxShadow(
+                                  color: Colors.grey,
+                                  blurRadius: 4,
+                                  offset: Offset(0, 3))
+                            ],
+                          ),
+                          child: TextField(
+                            controller: myController,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Container(
+                        height: 50,
+                        width: 50,
+                        decoration: const BoxDecoration(
+                          boxShadow: [
+                            BoxShadow(
                               color: Colors.grey,
                               blurRadius: 4,
-                              offset: Offset(0, 3))
-                        ],
-                      ),
-                      child: TextField(
-                        controller: myController,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Container(
-                    height: 50,
-                    width: 50,
-                    decoration: const BoxDecoration(
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey,
-                          blurRadius: 4,
-                          offset: Offset(0, 4),
+                              offset: Offset(0, 4),
+                            ),
+                          ],
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(25),
+                          ),
                         ),
-                      ],
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(25),
-                      ),
-                    ),
-                    child: ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          futureHotel = fetchHotel(myController.text);
-                        });
-                      },
-                      child: const Icon(
-                        Icons.search,
-                        size: 26,
-                      ),
-                      style: ElevatedButton.styleFrom(
-                          shape: const CircleBorder(), primary: Colors.green),
-                    ),
+                        child: ElevatedButton(
+                          onPressed: () {
+                            setState(() {
+                              futureHotel = fetchHotel(myController.text);
+                            });
+                          },
+                          child: const Icon(
+                            Icons.search,
+                            size: 26,
+                          ),
+                          style: ElevatedButton.styleFrom(
+                              shape: const CircleBorder(),
+                              primary: Colors.green),
+                        ),
+                      )
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                          margin: const EdgeInsets.all(10),
+                          child: Column(children: const [
+                            Text('Choisir une date',
+                                style: TextStyle(color: Colors.grey)),
+                            Text('12 Dec- 22 Dec')
+                          ])),
+                      Container(
+                        margin: const EdgeInsets.all(10),
+                        child: Column(
+                          children: const [
+                            Text('Nombre de personnes',
+                                style: TextStyle(color: Colors.grey)),
+                            Text('3')
+                          ],
+                        ),
+                      )
+                    ],
                   )
                 ],
               ),
-              Row(
+            ),
+            Container(
+              color: Colors.white,
+              height: 50,
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Container(
-                      margin: const EdgeInsets.all(10),
-                      child: Column(children: const [
-                        Text('Choisir une date',
-                            style: TextStyle(color: Colors.grey)),
-                        Text('12 Dec- 22 Dec')
-                      ])),
-                  Container(
-                    margin: const EdgeInsets.all(10),
-                    child: Column(
-                      children: const [
-                        Text('Nombre de personnes',
-                            style: TextStyle(color: Colors.grey)),
-                        Text('3')
-                      ],
-                    ),
+                  const Text('500 hotels trouvés',
+                      style: TextStyle(color: Colors.black)),
+                  Row(
+                    children: const [
+                      IconButton(
+                          onPressed: null,
+                          icon: Icon(Icons.filter_list_outlined,
+                              color: Colors.green, size: 25)),
+                      Text('Filtres', style: TextStyle(color: Colors.black))
+                    ],
                   )
                 ],
-              )
-            ],
-          ),
-        ),
-        Container(
-          color: Colors.white,
-          height: 50,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text('500 hotels trouvés',
-                  style: TextStyle(color: Colors.black)),
-              Row(
-                children: const [
-                  IconButton(
-                      onPressed: null,
-                      icon: Icon(Icons.filter_list_outlined,
-                          color: Colors.green, size: 25)),
-                  Text('Filtres', style: TextStyle(color: Colors.black))
-                ],
-              )
-            ],
-          ),
-        ),
-        Column(
-          children: [
-            FutureBuilder<Hotel>(
-              future: futureHotel,
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  snapshot.data!.list.removeLast();
-                  return Column(
-                    children: snapshot.data!.list.map((hotel) {
-                      return HotelCard(hotel);
-                    }).toList(),
-                  );
-                } else if (snapshot.hasError) {
-                  return Text('${snapshot.error}');
-                }
-
-                // By default, show a loading spinner.
-                return const CircularProgressIndicator();
-              },
+              ),
             ),
-          ],
-        ),
-      ]),
-    );
+            Column(
+              children: [
+                FutureBuilder<Hotel>(
+                  future: futureHotel,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      snapshot.data!.list.removeLast();
+                      return Column(
+                        children: snapshot.data!.list.map((hotel) {
+                          return HotelCard(hotel);
+                        }).toList(),
+                      );
+                    } else if (snapshot.hasError) {
+                      return Text('${snapshot.error}');
+                    }
+
+                    // By default, show a loading spinner.
+                    return const CircularProgressIndicator();
+                  },
+                ),
+              ],
+            ),
+          ]),
+        ));
   }
 }
 
@@ -279,6 +314,8 @@ class HotelCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    hotelName = this.hotelData[0]["hotelName"];
+    hotelPrice = this.hotelData[1][0]["price1"].toString();
     return Container(
       // child: Image.network(hotelData['picture'])
       height: 230,
@@ -328,7 +365,11 @@ class HotelCard extends StatelessWidget {
               ],
             ),
           ),
-          Text(this.hotelData[0]["hotelName"])
+          Text(this.hotelData[0][
+                  "hotelName"] /*this
+              .hotelData[1][0]["price1"]
+              .toString()*/
+              )
         ],
       ),
     );
