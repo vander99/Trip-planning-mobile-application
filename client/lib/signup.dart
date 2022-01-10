@@ -29,7 +29,8 @@ class SignUpPage extends StatelessWidget {
             Container(
               alignment: Alignment.center,
               margin: const EdgeInsets.symmetric(horizontal: 40),
-              child: const TextField(
+              child:  TextField(
+                controller: emailController,
                 decoration: InputDecoration(
                   labelText: "Email"
                 ),
@@ -40,7 +41,8 @@ class SignUpPage extends StatelessWidget {
             Container(
               alignment: Alignment.center,
               margin: const EdgeInsets.symmetric(horizontal: 40),
-              child: const TextField(
+              child:  TextField(
+                controller: pseudoController,
                 decoration: InputDecoration(
                   labelText: "Name"
                 ),
@@ -51,7 +53,8 @@ class SignUpPage extends StatelessWidget {
             Container(
               alignment: Alignment.center,
               margin: const EdgeInsets.symmetric(horizontal: 40),
-              child: const TextField(
+              child:  TextField(
+                controller: phoneController,
                 decoration: InputDecoration(
                   labelText: "Phone number",
                   hintText: '+91 7894561230',
@@ -63,7 +66,8 @@ class SignUpPage extends StatelessWidget {
             Container(
               alignment: Alignment.center,
               margin: const EdgeInsets.symmetric(horizontal: 40),
-              child: const TextField(
+              child:  TextField(
+                controller: passwordController,
                 decoration: InputDecoration(
                   labelText: "Password"
                 ),
@@ -78,6 +82,8 @@ class SignUpPage extends StatelessWidget {
               margin: const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
               child: RaisedButton(
                 onPressed: () {
+                  print(emailController.text.trim());
+                  print(passwordController.text.trim());
                   context
                       .read<AuthenticationService>()
                       .signUp(

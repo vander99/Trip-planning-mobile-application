@@ -30,7 +30,8 @@ class SignInPage extends StatelessWidget {
             Container(
               alignment: Alignment.center,
               margin: const EdgeInsets.symmetric(horizontal: 40),
-              child: const TextField(
+              child:  TextField(
+                controller: emailController,
                 decoration: InputDecoration(
                   labelText: "Email"
                 ),
@@ -41,7 +42,8 @@ class SignInPage extends StatelessWidget {
             Container(
               alignment: Alignment.center,
               margin: const EdgeInsets.symmetric(horizontal: 40),
-              child: const TextField(
+              child:  TextField(
+                controller: passwordController,
                 decoration: InputDecoration(
                   labelText: "Password"
                 ),
@@ -49,17 +51,7 @@ class SignInPage extends StatelessWidget {
               ),
             ),
 
-            Container(
-              alignment: Alignment.centerRight,
-              margin: const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
-              child: const Text(
-                "Forgot your password?",
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Color(0xFF4CAF50)
-                ),
-              ),
-            ),
+            
             
 
             SizedBox(height: size.height * 0.05),
