@@ -70,6 +70,7 @@ flutter:
   assets:
      - assets/images/Profile/profile.png
      - assets/images/Icons/
+     - assets/images/Icons/planeIcon.svg
   # To add assets to your application, add an assets section, like this:
 
 

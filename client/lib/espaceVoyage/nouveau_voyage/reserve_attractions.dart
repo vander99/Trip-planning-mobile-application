@@ -19,37 +19,33 @@ DateTime _dateTimeFin = DateTime.now();
 String hotelName = "";
 String hotelPrice = "";
 List<String> restaurantList = [];
+List<String> attractionList = [];
 
-class ReserveRestaurant extends StatefulWidget {
-  const ReserveRestaurant({Key? key}) : super(key: key);
-  static String route = "reserve_restaurants";
+class ReserveAttraction extends StatefulWidget {
+  const ReserveAttraction({Key? key}) : super(key: key);
+  static String route = "reserve_attraction";
 
   @override
-  _ReserveRestaurant createState() => _ReserveRestaurant();
+  _ReserveAttraction createState() => _ReserveAttraction();
 }
 
-Future<Restaurant> fetchRestaurant(String city) async {
-  List<Location> locations = await locationFromAddress(cityName);
-  var lat = locations[0].latitude.toString();
-  var lon = locations[0].longitude.toString();
-  var url =
-      'https://travel-advisor.p.rapidapi.com/restaurants/list-by-latlng?distance=2&lunit=km&currency=USD&lang=fr_FR&limit=50&latitude=' +
-          lat +
-          '&longitude=' +
-          lon +
-          '&open_now=false';
+Future<Attraction> fetchAttraction(String city) async {
+  var url = 'https://tripadvisor1.p.rapidapi.com/locations/search?query=' +
+      cityName +
+      '&lang=fr_FR&units=km&location_id=1&currency=USD&limit=50&offset=0&sort=relevance';
   final response = await http.get(Uri.parse(url), headers: {
     "x-rapidapi-host": "travel-advisor.p.rapidapi.com",
     "x-rapidapi-key": "8da6724a93msh2894fa97e7a2e57p13d12fjsn61de0eb7ba55",
   });
+
   if (response.statusCode == 200) {
-    return Restaurant.fromJson(jsonDecode(response.body));
+    return Attraction.fromJson(jsonDecode(utf8.decode(response.bodyBytes)));
   } else {
-    throw Exception('Failed to load Restaurant');
+    throw Exception('Failed to load Attraction');
   }
 }
 
-class _ReserveRestaurant extends State<ReserveRestaurant> {
+class _ReserveAttraction extends State<ReserveAttraction> {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
@@ -60,7 +56,7 @@ class _ReserveRestaurant extends State<ReserveRestaurant> {
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
-  //static String route = "Restaurant_page";
+  static String route = "reserve_attraction";
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -75,10 +71,11 @@ class _HomePageState extends State<HomePage> {
     _dateTimeFin = arguments['dateFin'];
     hotelName = arguments["hotelName"];
     hotelPrice = arguments["hotelPrice"];
+    restaurantList = arguments["restaurantList"];
     return Scaffold(
       appBar: MyAppBar(text: "Explore"),
       body: SingleChildScrollView(
-        child: RestaurantSection(),
+        child: AttractionSection(),
       ),
     );
   }
@@ -107,7 +104,7 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
         },
       ),
       title: Text(
-        "Choose your restaurant",
+        "Choose your attraction",
         style: const TextStyle(
           color: Colors.black,
           fontSize: 22,
@@ -120,13 +117,13 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 }
 
-class RestaurantSection extends StatefulWidget {
+class AttractionSection extends StatefulWidget {
   @override
-  _RestaurantSectionState createState() => _RestaurantSectionState();
+  _AttractionSectionState createState() => _AttractionSectionState();
 }
 
-class _RestaurantSectionState extends State<RestaurantSection> {
-  late Future<Restaurant> futureRestaurant;
+class _AttractionSectionState extends State<AttractionSection> {
+  late Future<Attraction> futureAttraction;
   final myController = TextEditingController();
 
   @override
@@ -138,7 +135,7 @@ class _RestaurantSectionState extends State<RestaurantSection> {
   @override
   void initState() {
     super.initState();
-    futureRestaurant = fetchRestaurant("bordeaux");
+    futureAttraction = fetchAttraction("bordeaux");
   }
 
   @override
@@ -191,7 +188,7 @@ class _RestaurantSectionState extends State<RestaurantSection> {
                     child: ElevatedButton(
                       onPressed: () {
                         setState(() {
-                          futureRestaurant = fetchRestaurant(myController.text);
+                          futureAttraction = fetchAttraction(myController.text);
                         });
                       },
                       child: const Icon(
@@ -235,7 +232,7 @@ class _RestaurantSectionState extends State<RestaurantSection> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('500 Restaurants trouvés',
+              const Text('500 Attractions trouvés',
                   style: TextStyle(color: Colors.black)),
               Row(
                 children: const [
@@ -251,28 +248,28 @@ class _RestaurantSectionState extends State<RestaurantSection> {
         ),
         Column(
           children: [
-            FutureBuilder<Restaurant>(
-              future: futureRestaurant,
+            FutureBuilder<Attraction>(
+              future: futureAttraction,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  snapshot.data!.list.removeLast();
+                  List<Widget> filtredData = [];
+                  for (var i = 0; i < snapshot.data!.list.length; i++) {
+                    if (snapshot.data!.list[i]['result_type'] == "activities" ||
+                        snapshot.data!.list[i]['result_type'] ==
+                            "things_to_do") {
+                      var activityData = [];
+                      activityData
+                          .add(snapshot.data!.list[i]['result_object']['name']);
+
+                      activityData.add(snapshot.data!.list[i]['result_object']
+                          ['photo']['images']['original']['url']);
+
+                      filtredData.add(AttractionCard(activityData));
+                    }
+                  }
+
                   return Column(
-                    children: snapshot.data!.list.map((restaurant) {
-                      var restaurantData = [];
-                      if (restaurant["name"] != null) {
-                        restaurantData.add(restaurant["name"]);
-                      } else {
-                        restaurantData.add("unknown");
-                      }
-                      try {
-                        restaurantData.add(
-                            restaurant["photo"]["images"]["original"]["url"]);
-                      } catch (e) {
-                        restaurantData.add(
-                            "https://aeroclub-issoire.fr/wp-content/uploads/2020/05/image-not-found-300x225.jpg");
-                      }
-                      return RestaurantCard(restaurantData);
-                    }).toList(),
+                    children: filtredData,
                   );
                 } else if (snapshot.hasError) {
                   return Text('${snapshot.error}');
@@ -289,16 +286,75 @@ class _RestaurantSectionState extends State<RestaurantSection> {
   }
 }
 
-class RestaurantCard extends StatefulWidget {
-  final List RestaurantData;
-  RestaurantCard(this.RestaurantData);
+/*class AttractionCard extends StatelessWidget {
+  final List AttractionData;
+  AttractionCard(this.AttractionData);
+
   @override
-  _RestaurantCard createState() => _RestaurantCard();
+  Widget build(BuildContext context) {
+    return Container(
+      // child: Image.network(AttractionData['picture'])
+      height: 230,
+      margin: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: Colors.blue,
+        borderRadius: const BorderRadius.all(
+          Radius.circular(18),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.shade200,
+            spreadRadius: 4,
+            blurRadius: 6,
+            offset: const Offset(0, 3),
+          )
+        ],
+      ),
+      child: Column(
+        children: [
+          Container(
+            height: 140,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(18),
+                topRight: Radius.circular(18),
+              ),
+              image: DecorationImage(
+                image: NetworkImage(AttractionData[1]),
+                fit: BoxFit.cover,
+              ),
+            ),
+            child: Stack(
+              children: [
+                Positioned(
+                  top: 5,
+                  child: MaterialButton(
+                      onPressed: () {},
+                      shape: const CircleBorder(),
+                      color: Colors.white,
+                      child: const Icon(
+                        Icons.add,
+                        size: 20,
+                      )),
+                )
+              ],
+            ),
+          ),
+          Text(this.AttractionData[0])
+        ],
+      ),
+    );
+  }
+}*/
+
+class AttractionCard extends StatefulWidget {
+  final List AttractionData;
+  AttractionCard(this.AttractionData);
+  @override
+  _AttractionCard createState() => _AttractionCard();
 }
 
-class _RestaurantCard extends State<RestaurantCard> {
-  /*final List RestaurantData;
-  RestaurantCard(this.RestaurantData);*/
+class _AttractionCard extends State<AttractionCard> {
   late bool isChosen;
 
   @override
@@ -328,14 +384,23 @@ class _RestaurantCard extends State<RestaurantCard> {
           children: [
             GestureDetector(
               onTap: () {
-                Navigator.pushNamed(context, "reserve_attraction", arguments: {
+                print("cityName" + cityName);
+                print("budget" + budget);
+                print(_dateTimeDeb);
+                print(_dateTimeFin);
+                print("hotelName" + hotelName);
+                print(hotelPrice);
+                print(restaurantList);
+                print(attractionList);
+                Navigator.pushNamed(context, "submit", arguments: {
                   "cityName": cityName,
                   "budget": budget,
                   "dateDeb": _dateTimeDeb,
                   "dateFin": _dateTimeFin,
                   "hotelName": hotelName,
                   "hotelPrice": hotelPrice,
-                  "restaurantList": restaurantList
+                  "restaurantList": restaurantList,
+                  "attractionList": attractionList
                 });
               },
               child: Container(
@@ -348,7 +413,7 @@ class _RestaurantCard extends State<RestaurantCard> {
                   ),
                   image: DecorationImage(
                     //onTap: (),
-                    image: NetworkImage(widget.RestaurantData[1]),
+                    image: NetworkImage(widget.AttractionData[1]),
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -358,14 +423,14 @@ class _RestaurantCard extends State<RestaurantCard> {
                       top: 5,
                       child: MaterialButton(
                           onPressed: () {
-                            if (!restaurantList
-                                .contains(widget.RestaurantData[0])) {
-                              restaurantList.add(widget.RestaurantData[0]);
+                            if (!attractionList
+                                .contains(widget.AttractionData[0])) {
+                              attractionList.add(widget.AttractionData[0]);
                               setState(() {
                                 isChosen = true;
                               });
                             } else {
-                              restaurantList.remove(widget.RestaurantData[0]);
+                              attractionList.remove(widget.AttractionData[0]);
                               setState(() {
                                 isChosen = false;
                               });
@@ -387,7 +452,7 @@ class _RestaurantCard extends State<RestaurantCard> {
                         bottom: 40,
                         left: 15,
                         child: Text(
-                          widget.RestaurantData[0],
+                          widget.AttractionData[0],
                           style: TextStyle(
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
@@ -413,13 +478,13 @@ class _RestaurantCard extends State<RestaurantCard> {
   }
 }
 
-class Restaurant {
+class Attraction {
   List<dynamic> list;
 
-  Restaurant(this.list);
+  Attraction(this.list);
 
-  factory Restaurant.fromJson(dynamic json) {
-    return Restaurant(json['data'] as List<dynamic>);
+  factory Attraction.fromJson(dynamic json) {
+    return Attraction(json['data'] as List<dynamic>);
   }
 
   @override

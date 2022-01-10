@@ -1,9 +1,11 @@
 import 'package:client/accueil/hotel_page.dart';
 import 'package:client/accueil/restaurant_page.dart';
 import 'package:client/accueil/attractions_page.dart';
+import 'package:client/espaceVoyage/nouveau_voyage/reserve_attractions.dart';
 import 'package:client/espaceVoyage/nouveau_voyage/reserve_hotel.dart';
 import 'package:client/espaceVoyage/nouveau_voyage/reserve_restaurants.dart';
 import 'package:client/espaceVoyage/nouveau_voyage/start_form.dart';
+import 'package:client/espaceVoyage/nouveau_voyage/submit.dart';
 import 'package:client/profile/Mes_Amis/mes_amis.dart';
 import 'package:client/profile/Mes_Preferences/mes_preferences.dart';
 import 'package:client/profile/Mon_Compte/mes_reglages.dart';
@@ -24,6 +26,8 @@ getRoutes() {
     AttractionPage.route: (context) => AttractionPage(),
     HotelPageReserv.route: (context) => HotelPageReserv(),
     FormScreen.route: (context) => FormScreen(),
-    ReserveRestaurant.route: (context) => ReserveRestaurant()
+    ReserveRestaurant.route: (context) => ReserveRestaurant(),
+    ReserveAttraction.route: (context) => ReserveAttraction(),
+    Submit.route: (context) => Submit()
   };
 }
