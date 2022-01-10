@@ -1,18 +1,3 @@
-/*
-
-taper sur un terminal :
-      curl --request POST \
-         --url 'https://api.makcorps.com/auth' \
-         --header 'Content-Type: application/json' \
-         --data '{
-              "username":"tsafira",
-              "password":"azerty123"
-      }'
-
-
-Puis récupérer le token et le remplacer dans le parametre Authorization ligne 43 
-*/
-
 import 'dart:io';
 
 import 'package:client/authentication_service.dart';

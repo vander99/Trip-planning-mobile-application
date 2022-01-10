@@ -284,86 +284,89 @@ class RestaurantCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-        onTap: () {
-          Navigator.pushNamed(context, "Attraction_page",
-              arguments: {"cityName": cityName});
-        },
-        child: Container(
-            height: 220,
-            margin: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-                borderRadius: const BorderRadius.all(
-                  Radius.circular(18),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.white,
-                    spreadRadius: 4,
-                    blurRadius: 6,
-                    offset: const Offset(0, 3),
-                  )
-                ]),
-            child: Column(
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pushNamed(context, "Attraction_page",
-                        arguments: {"cityName": cityName});
-                  },
-                  child: Container(
-                    height: 200,
-                    decoration: BoxDecoration(
-                      //onTap: (),
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(18),
-                        topRight: Radius.circular(18),
-                      ),
-                      image: DecorationImage(
-                        //onTap: (),
-                        image: NetworkImage(RestaurantData[1]),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    child: Stack(
-                      children: [
-                        Positioned(
-                          top: 5,
-                          child: MaterialButton(
-                              onPressed: () {},
-                              shape: const CircleBorder(),
-                              color: Colors.white,
-                              child: const Icon(
-                                Icons.favorite_outline_rounded,
-                                size: 20,
-                              )),
-                        ),
-                        Positioned(
-                            bottom: 40,
-                            left: 15,
-                            child: Text(
-                              this.RestaurantData[0],
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                  fontSize: 22),
-                            )),
-                        Positioned(
-                          bottom: 10,
-                          left: 15,
-                          child: Text(
-                            'Découvrir.',
-                            style: TextStyle(
-                                fontWeight: FontWeight.w300,
-                                color: Colors.white,
-                                fontSize: 18),
-                          ),
-                        ),
-                      ],
-                    ),
+      onTap: () {
+        Navigator.pushNamed(context, "Attraction_page",
+            arguments: {"cityName": cityName});
+      },
+      child: Container(
+        height: 220,
+        margin: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+            borderRadius: const BorderRadius.all(
+              Radius.circular(18),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.white,
+                spreadRadius: 4,
+                blurRadius: 6,
+                offset: const Offset(0, 3),
+              )
+            ]),
+        child: Column(
+          children: [
+            GestureDetector(
+              onTap: () {
+                Navigator.pushNamed(context, "Attraction_page",
+                    arguments: {"cityName": cityName});
+              },
+              child: Container(
+                height: 200,
+                decoration: BoxDecoration(
+                  //onTap: (),
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(18),
+                    topRight: Radius.circular(18),
                   ),
-                )
-              ],
-            )));
+                  image: DecorationImage(
+                    //onTap: (),
+                    image: NetworkImage(RestaurantData[1]),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                child: Stack(
+                  children: [
+                    Positioned(
+                      top: 5,
+                      child: MaterialButton(
+                        onPressed: () {},
+                        shape: const CircleBorder(),
+                        color: Colors.white,
+                        child: const Icon(
+                          Icons.favorite_outline_rounded,
+                          size: 20,
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                        bottom: 40,
+                        left: 15,
+                        child: Text(
+                          this.RestaurantData[0],
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                              fontSize: 22),
+                        )),
+                    Positioned(
+                      bottom: 10,
+                      left: 15,
+                      child: Text(
+                        'Découvrir.',
+                        style: TextStyle(
+                            fontWeight: FontWeight.w300,
+                            color: Colors.white,
+                            fontSize: 18),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
   }
 }
 
