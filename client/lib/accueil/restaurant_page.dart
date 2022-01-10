@@ -339,15 +339,16 @@ class RestaurantCard extends StatelessWidget {
                       ),
                     ),
                     Positioned(
-                        bottom: 40,
-                        left: 15,
-                        child: Text(
-                          this.RestaurantData[0],
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                              fontSize: 22),
-                        )),
+                      bottom: 40,
+                      left: 15,
+                      child: Text(
+                        this.RestaurantData[0],
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            fontSize: 22),
+                      ),
+                    ),
                     Positioned(
                       bottom: 10,
                       left: 15,
