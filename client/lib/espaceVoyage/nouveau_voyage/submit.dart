@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 String cityName = "";
 String budget = "";
@@ -85,6 +88,25 @@ class _SubmitState extends State<Submit> {
               ),
               ElevatedButton(
                 onPressed: () {
+                  List<Map<String, dynamic>> myData = [
+                    {
+                      'Destination': cityName,
+                      'Budget': 1500,
+                      'hotelName': hotelName,
+                      'hotelPrice': hotelPrice,
+                      'restaurantList': restaurantList,
+                      'attractionList': attractionList,
+                      'dateDeb': _dateTimeDeb,
+                      'dateFin': _dateTimeFin
+                    }
+                  ];
+
+                  String userId = (FirebaseAuth.instance.currentUser!).uid;
+                  FirebaseFirestore.instance
+                      .collection('users')
+                      .doc(userId)
+                      .update({"voyages": FieldValue.arrayUnion(myData)});
+
                   // Respond to button press
                 },
                 child: Text('Submit'),
