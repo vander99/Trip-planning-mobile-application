@@ -20,7 +20,7 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  Widget buildColoredCard() => Card(
+  Widget buildColoredCard(List<dynamic> friendList) => Card(
         shadowColor: Colors.red,
         elevation: 8,
         clipBehavior: Clip.antiAlias,
@@ -29,13 +29,8 @@ class _MainPageState extends State<MainPage> {
         ),
         child: new InkWell(
             onTap: () {
-              Navigator.pushNamed(
-                context,
-                "start_form",
-                /*arguments: {
-                                  "cityName": hotelList[index]['place']
-                                }*/
-              );
+              Navigator.pushNamed(context, "start_form",
+                  arguments: {"friends": friendList});
             },
             child: Container(
               decoration: BoxDecoration(
@@ -158,7 +153,7 @@ class _MainPageState extends State<MainPage> {
               body: ListView(
                 padding: EdgeInsets.all(16),
                 children: [
-                  buildColoredCard(),
+                  buildColoredCard(data['friendsList']),
                   (data['travelList'].length != 0)
                       ? ListView.builder(
                           scrollDirection: Axis.vertical,

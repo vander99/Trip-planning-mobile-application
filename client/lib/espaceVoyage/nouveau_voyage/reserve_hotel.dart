@@ -17,6 +17,7 @@ import 'dart:io';
 
 import 'package:client/authentication_service.dart';
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:provider/src/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:async';
@@ -42,7 +43,7 @@ class HotelPageReserv extends StatefulWidget {
   _HotelPageReserv createState() => _HotelPageReserv();
 }
 
-Future<Hotel> fetchHotel(String city) async {
+/*Future<Hotel> fetchHotel(String city) async {
   var url = 'https://api.makcorps.com/free/' + cityName;
   var token = await fetchAuthToken();
   var auth = "JWT " + token;
@@ -53,9 +54,30 @@ Future<Hotel> fetchHotel(String city) async {
   } else {
     throw Exception('Failed to load hotel');
   }
+}*/
+
+Future<Hotel> fetchHotel(String city) async {
+  List<Location> locations = await locationFromAddress(cityName);
+  var lat = locations[0].latitude.toString();
+  var lon = locations[0].longitude.toString();
+  var url =
+      "https://travel-advisor.p.rapidapi.com/hotels/list-by-latlng?latitude=" +
+          lat +
+          "&longitude=" +
+          lon +
+          "&lang=en_US&limit=100&adults=1&currency=EUR&zff=4%2C6&subcategory=hotel%2Cbb%2Cspecialty";
+  final response = await http.get(Uri.parse(url), headers: {
+    "x-rapidapi-host": "travel-advisor.p.rapidapi.com",
+    "x-rapidapi-key": "8da6724a93msh2894fa97e7a2e57p13d12fjsn61de0eb7ba55",
+  });
+  if (response.statusCode == 200) {
+    return Hotel.fromJson(jsonDecode(utf8.decode(response.bodyBytes)));
+  } else {
+    throw Exception('Failed to load hotel');
+  }
 }
 
-Future<String> fetchAuthToken() async {
+/*Future<String> fetchAuthToken() async {
   var url = 'https://api.makcorps.com/auth';
   final response = await http.post(Uri.parse(url),
       headers: <String, String>{
@@ -69,7 +91,7 @@ Future<String> fetchAuthToken() async {
   } else {
     throw Exception('Failed to fetch token');
   }
-}
+}*/
 
 class _HotelPageReserv extends State<HotelPageReserv> {
   @override
@@ -98,7 +120,7 @@ class _HomePageState extends State<HomePage> {
     amisParticipants = arguments["participants"];
 
     return Scaffold(
-      appBar: MyAppBar(text: "Explore"),
+      appBar: MyAppBar(text: "Choisi ton hotel"),
       body: SingleChildScrollView(
         child: HotelSection(),
       ),
@@ -129,7 +151,7 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
         },
       ),
       title: Text(
-        "Choose your hostel",
+        "Choisi ton hotel",
         style: const TextStyle(
           color: Colors.black,
           fontSize: 22,
@@ -291,11 +313,22 @@ class _HotelSectionState extends State<HotelSection> {
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
                       snapshot.data!.list.removeLast();
-                      return Column(
-                        children: snapshot.data!.list.map((hotel) {
-                          return HotelCard(hotel);
-                        }).toList(),
-                      );
+                      List<Widget> filtredData = [];
+                      for (var i = 0; i < snapshot.data!.list.length; i++) {
+                        if (snapshot.data!.list[i]['name'] != null &&
+                            snapshot.data!.list[i]['photo']['images']['medium']
+                                    ['url'] !=
+                                null &&
+                            snapshot.data!.list[5]['price'] != null) {
+                          var hotelData = [];
+                          hotelData.add(snapshot.data!.list[i]['name']);
+                          hotelData.add(snapshot.data!.list[i]['photo']
+                              ['images']['medium']['url']);
+                          hotelData.add(snapshot.data!.list[i]['price']);
+                          filtredData.add(HotelCard(hotelData));
+                        }
+                      }
+                      return Column(children: filtredData);
                     } else if (snapshot.hasError) {
                       return Text('${snapshot.error}');
                     }
@@ -317,62 +350,57 @@ class HotelCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    hotelName = this.hotelData[0]["hotelName"];
-    hotelPrice = this.hotelData[1][0]["price1"].toString();
+    hotelName = this.hotelData[0];
+    hotelPrice = this.hotelData[2].toString();
     return Container(
       // child: Image.network(hotelData['picture'])
-      height: 230,
+      height: 200,
       margin: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: Colors.blue,
-        borderRadius: const BorderRadius.all(
-          Radius.circular(18),
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(18),
+          topRight: Radius.circular(18),
         ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.shade200,
-            spreadRadius: 4,
-            blurRadius: 6,
-            offset: const Offset(0, 3),
-          )
-        ],
+        image: DecorationImage(
+          //onTap: (),
+          image: NetworkImage(hotelData[1]),
+          fit: BoxFit.cover,
+        ),
       ),
-      child: Column(
+      child: Stack(
         children: [
-          Container(
-            height: 140,
-            decoration: const BoxDecoration(
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(18),
-                topRight: Radius.circular(18),
-              ),
-              image: DecorationImage(
-                image: NetworkImage(
-                    'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg'),
-                fit: BoxFit.cover,
-              ),
-            ),
-            child: Stack(
-              children: [
-                Positioned(
-                  top: 5,
-                  child: MaterialButton(
-                      onPressed: () {},
-                      shape: const CircleBorder(),
-                      color: Colors.white,
-                      child: const Icon(
-                        Icons.favorite_outline_rounded,
-                        size: 20,
-                      )),
-                )
-              ],
-            ),
+          Positioned(
+            top: 5,
+            child: MaterialButton(
+                onPressed: () {},
+                shape: const CircleBorder(),
+                color: Colors.white,
+                child: const Icon(
+                  Icons.favorite_outline_rounded,
+                  size: 20,
+                )),
           ),
-          Text(this.hotelData[0][
-                  "hotelName"] /*this
-              .hotelData[1][0]["price1"]
-              .toString()*/
-              )
+          Positioned(
+              bottom: 40,
+              left: 15,
+              child: Column(
+                children: [
+                  Text(
+                    this.hotelData[0],
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        fontSize: 22),
+                  ),
+                  Text(
+                    this.hotelData[2],
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        fontSize: 15),
+                  ),
+                ],
+              )),
         ],
       ),
     );
@@ -385,7 +413,7 @@ class Hotel {
   Hotel(this.list);
 
   factory Hotel.fromJson(dynamic json) {
-    return Hotel(json['Comparison'] as List<dynamic>);
+    return Hotel(json['data'] as List<dynamic>);
   }
 
   @override

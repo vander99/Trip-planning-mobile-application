@@ -99,7 +99,7 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
         },
       ),
       title: Text(
-        "Choose your hotel",
+        "Choisi ton hotel",
         style: const TextStyle(
           color: Colors.black,
           fontSize: 22,

@@ -5,7 +5,15 @@ import 'package:multi_select_flutter/multi_select_flutter.dart';
 
 import 'package:intl/date_symbol_data_local.dart';
 
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+
 List<String> amisParticipants = [];
+List<dynamic> friendListId = [];
+List<dynamic> friendList = [];
+String myPseudo = "test";
 
 class FormScreen extends StatefulWidget {
   static String route = "start_form";
@@ -65,121 +73,158 @@ class FormScreenState extends State<FormScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Informations du voyage",
-            style: TextStyle(color: Colors.black)),
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        elevation: 1,
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back,
-            color: Colors.green,
-          ),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
-      ),
-      body: SingleChildScrollView(
-        child: Container(
-          margin: EdgeInsets.all(24),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                _cityName(),
-                _buildBudget(),
-                Container(
-                    margin: const EdgeInsets.only(top: 40.0),
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          Column(children: [
-                            Text(pickedDateDeb == false
-                                ? ''
-                                : DateFormat.yMMMd()
-                                    .format(_dateTimeDeb)
-                                    .toString()),
-                            RaisedButton(
-                              child: Text('Date de début'),
-                              onPressed: () {
-                                showDatePicker(
-                                        context: context,
-                                        initialDate: _dateTimeDeb,
-                                        firstDate: DateTime(2022),
-                                        lastDate: DateTime(2024))
-                                    .then((date) {
-                                  setState(() {
-                                    _dateTimeDeb = date!;
-                                    pickedDateDeb = true;
-                                  });
-                                });
-                              },
-                            )
-                          ]),
-                          Column(children: [
-                            Text(pickedDateFin == false
-                                ? ''
-                                : DateFormat.yMMMd()
-                                    .format(_dateTimeFin)
-                                    .toString()),
-                            RaisedButton(
-                              child: Text('Date de fin'),
-                              onPressed: () {
-                                showDatePicker(
-                                        context: context,
-                                        initialDate: _dateTimeFin,
-                                        firstDate: DateTime(2022),
-                                        lastDate: DateTime(2024))
-                                    .then((date) {
-                                  setState(() {
-                                    _dateTimeFin = date!;
-                                    pickedDateFin = true;
-                                  });
-                                });
-                              },
-                            ),
-                          ]),
-                        ])),
-                SizedBox(height: 20),
-                TestAmis(),
-                SizedBox(height: 60),
-                RaisedButton(
-                  child: Text(
-                    'Submit',
-                    style: TextStyle(color: Colors.green, fontSize: 16),
-                  ),
-                  onPressed: () {
-                    if (!_formKey.currentState!.validate()) {
-                      return;
-                    }
+    final userRef = FirebaseFirestore.instance.collection('users');
 
-                    _formKey.currentState!.save();
+    final arguments = ModalRoute.of(context)!.settings.arguments as Map;
+    friendListId = arguments['friends'];
 
-                    Navigator.pushNamed(context, "reserve_hotel", arguments: {
-                      "cityName": _name,
-                      "budget": _budget,
-                      "dateDeb": _dateTimeDeb,
-                      "dateFin": _dateTimeFin,
-                      "participants": amisParticipants
-                    });
+    return StreamBuilder(
+        stream: FirebaseFirestore.instance.collection('users').snapshots(),
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (!snapshot.hasData) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+          if (snapshot.hasError) {
+            return Text("Something went wrong");
+          }
 
-                    //Send to API
+          /*if (snapshot.hasData && !snapshot.data!.exists) {
+            return Text("Document does not exist");
+          }*/
+          print("snapshot");
+          print(snapshot.data!.docs[0]['pseudo']);
+          snapshot.data!.docs.forEach((item) => {
+                if (friendListId.contains(item['userID']) &&
+                    !friendList.contains(item['pseudo']))
+                  {
+                    friendList.add(item['pseudo']),
+                    amisParticipants.add(item['pseudo'])
                   },
-                )
-              ],
+                if (item['userID'] == FirebaseAuth.instance.currentUser!.uid)
+                  {myPseudo = item['pseudo']}
+              });
+
+          /*Map<String, dynamic> data =
+                snapshot.data!.data() as Map<String, dynamic>;*/
+          return Scaffold(
+            appBar: AppBar(
+              title: Text("Informations du voyage",
+                  style: TextStyle(color: Colors.black)),
+              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+              elevation: 1,
+              leading: IconButton(
+                icon: Icon(
+                  Icons.arrow_back,
+                  color: Colors.green,
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
             ),
-          ),
-        ),
-      ),
-    );
+            body: SingleChildScrollView(
+              child: Container(
+                margin: EdgeInsets.all(24),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      _cityName(),
+                      _buildBudget(),
+                      Container(
+                          margin: const EdgeInsets.only(top: 40.0),
+                          child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                Column(children: [
+                                  Text(pickedDateDeb == false
+                                      ? ''
+                                      : DateFormat.yMMMd()
+                                          .format(_dateTimeDeb)
+                                          .toString()),
+                                  RaisedButton(
+                                    child: Text('Date de début'),
+                                    onPressed: () {
+                                      showDatePicker(
+                                              context: context,
+                                              initialDate: _dateTimeDeb,
+                                              firstDate: DateTime(2022),
+                                              lastDate: DateTime(2024))
+                                          .then((date) {
+                                        setState(() {
+                                          _dateTimeDeb = date!;
+                                          pickedDateDeb = true;
+                                        });
+                                      });
+                                    },
+                                  )
+                                ]),
+                                Column(children: [
+                                  Text(pickedDateFin == false
+                                      ? ''
+                                      : DateFormat.yMMMd()
+                                          .format(_dateTimeFin)
+                                          .toString()),
+                                  RaisedButton(
+                                    child: Text('Date de fin'),
+                                    onPressed: () {
+                                      showDatePicker(
+                                              context: context,
+                                              initialDate: _dateTimeFin,
+                                              firstDate: DateTime(2022),
+                                              lastDate: DateTime(2024))
+                                          .then((date) {
+                                        setState(() {
+                                          _dateTimeFin = date!;
+                                          pickedDateFin = true;
+                                        });
+                                      });
+                                    },
+                                  ),
+                                ]),
+                              ])),
+                      SizedBox(height: 20),
+                      TestAmis(),
+                      SizedBox(height: 60),
+                      RaisedButton(
+                        child: Text(
+                          'Submit',
+                          style: TextStyle(color: Colors.green, fontSize: 16),
+                        ),
+                        onPressed: () {
+                          if (!_formKey.currentState!.validate()) {
+                            return;
+                          }
+
+                          _formKey.currentState!.save();
+
+                          Navigator.pushNamed(context, "reserve_hotel",
+                              arguments: {
+                                "cityName": _name,
+                                "budget": _budget,
+                                "dateDeb": _dateTimeDeb,
+                                "dateFin": _dateTimeFin,
+                                "participants": amisParticipants
+                              });
+
+                          //Send to API
+                        },
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          );
+        });
   }
 }
 
 class MultiSelect extends StatefulWidget {
-  final List<String> items;
+  final List<dynamic> items;
   const MultiSelect({Key? key, required this.items}) : super(key: key);
 
   @override
@@ -251,18 +296,12 @@ class TestAmis extends StatefulWidget {
 }
 
 class _TestAmis extends State<TestAmis> {
-  List<String> _selectedItems = ['moi'];
+  List<String> _selectedItems = [myPseudo];
 
   void _showMultiSelect() async {
     // a list of selectable items
     // these items can be hard-coded or dynamically fetched from a database/API
-    final List<String> _items = [
-      'Amis 1',
-      'Amis 2',
-      'Amis 3',
-      'Amis 4',
-      'Amis 5'
-    ];
+    final List<dynamic> _items = friendList;
 
     final List<String>? results = await showDialog(
       context: context,
