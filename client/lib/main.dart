@@ -5,6 +5,7 @@ import 'package:client/profile/Mes_Preferences/mes_preferences.dart';
 import 'package:client/profile/Nvx_Mdp/nvx_mdp.dart';
 import 'package:client/routes.dart';
 import 'package:client/signin.dart';
+import 'package:client/discover.dart';
 import 'package:client/profile/Mon_Compte/mon_compte.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -56,6 +57,7 @@ class AuthenticationWrapper extends StatelessWidget {
       return HomePage();
     }
 
-    return SignInPage();
+    //return SignInPage();
+    return DiscoverPage();
   }
 }
