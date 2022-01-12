@@ -81,7 +81,18 @@ class _MainPageState extends State<MainPage> {
             )),
       );
 
-  Widget buildImageCard(String city, String imageCity) => Card(
+  Widget buildImageCard(
+          String city,
+          String imageCity,
+          int budget,
+          DateTime _dateTimeDeb,
+          DateTime _dateTimeFin,
+          String hotelName,
+          String hotelPrice,
+          List<dynamic> restaurantList,
+          List<dynamic> attractionList,
+          List<dynamic> amisParticipants) =>
+      Card(
         clipBehavior: Clip.antiAlias,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24),
@@ -95,7 +106,19 @@ class _MainPageState extends State<MainPage> {
               ),
               //colorFilter: ColorFilters.greyscale,
               child: InkWell(
-                onTap: () {},
+                onTap: () {
+                  Navigator.pushNamed(context, "historique", arguments: {
+                    "cityName": city,
+                    "budget": budget,
+                    "dateDeb": _dateTimeDeb,
+                    "dateFin": _dateTimeFin,
+                    "hotelName": hotelName,
+                    "hotelPrice": hotelPrice,
+                    "restaurantList": restaurantList,
+                    "attractionList": attractionList,
+                    "participants": amisParticipants
+                  });
+                },
               ),
               height: 240,
               fit: BoxFit.cover,
@@ -136,12 +159,32 @@ class _MainPageState extends State<MainPage> {
                 padding: EdgeInsets.all(16),
                 children: [
                   buildColoredCard(),
-                  buildImageCard(data['voyages'][0]['Destination'],
-                      'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/1b/36/37/32/caption.jpg?w=700&h=500&s=1'),
-                  buildImageCard("Bordeaux",
-                      'https://res.cloudinary.com/hzekpb1cg/image/upload/c_fill,h_410,w_800/q_auto:low,f_auto/s3/public/prod/2019-02/Bordeaux.jpg'),
-                  buildImageCard("Paris",
-                      'https://www.parisinfo.com/var/otcp/sites/images/node_43/node_51/node_233/vue-sur-les-toits-de-la-tour-saint-jacques-%7C-740x380-%7C-%C2%A9-elodie-gutbrod-cr%C3%A9atividie/21581411-1-fre-FR/Vue-sur-les-toits-de-la-tour-Saint-Jacques-%7C-740x380-%7C-%C2%A9-Elodie-Gutbrod-Cr%C3%A9atividie.jpg'),
+                  (data['travelList'].length != 0)
+                      ? ListView.builder(
+                          scrollDirection: Axis.vertical,
+                          shrinkWrap: true,
+                          itemCount: data['travelList'].length,
+                          itemBuilder: (context, index) {
+                            return buildImageCard(
+                                data['travelList'][index]['Destination'],
+                                'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/1b/36/37/32/caption.jpg?w=700&h=500&s=1',
+                                data['travelList'][index]['Budget'],
+                                DateTime.parse(data['travelList'][index]
+                                        ['dateDeb']
+                                    .toDate()
+                                    .toString()),
+                                DateTime.parse(data['travelList'][index]
+                                        ['dateFin']
+                                    .toDate()
+                                    .toString()),
+                                data['travelList'][index]['hotelName'],
+                                data['travelList'][index]['hotelPrice'],
+                                data['travelList'][index]['restaurantList'],
+                                data['travelList'][index]['attractionList'],
+                                data['travelList'][index]['participants']);
+                          },
+                        )
+                      : Text("Vous n'avez encore organisé aucun voyage"),
                 ],
               ),
             );

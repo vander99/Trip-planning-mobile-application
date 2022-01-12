@@ -1,6 +1,7 @@
 import 'package:client/accueil/hotel_page.dart';
 import 'package:client/accueil/restaurant_page.dart';
 import 'package:client/accueil/attractions_page.dart';
+import 'package:client/espaceVoyage/historique.dart';
 import 'package:client/espaceVoyage/nouveau_voyage/reserve_attractions.dart';
 import 'package:client/espaceVoyage/nouveau_voyage/reserve_hotel.dart';
 import 'package:client/espaceVoyage/nouveau_voyage/reserve_restaurants.dart';
@@ -32,5 +33,6 @@ getRoutes() {
     ReserveRestaurant.route: (context) => ReserveRestaurant(),
     ReserveAttraction.route: (context) => ReserveAttraction(),
     Submit.route: (context) => Submit(),
+    Historique.route: (context) => Historique()
   };
 }

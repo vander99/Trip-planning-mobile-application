@@ -10,28 +10,28 @@ DateTime _dateTimeDeb = DateTime.now();
 DateTime _dateTimeFin = DateTime.now();
 String hotelName = "";
 String hotelPrice = "";
-List<String> restaurantList = [];
-List<String> attractionList = [];
+List<dynamic> restaurantList = [];
+List<dynamic> attractionList = [];
 int daysNum = 0;
-List<String> amisParticipants = [];
+List<dynamic> amisParticipants = [];
 //int totalPrice = 0;
 
-class Submit extends StatefulWidget {
-  const Submit({Key? key}) : super(key: key);
-  static String route = "submit";
+class Historique extends StatefulWidget {
+  const Historique({Key? key}) : super(key: key);
+  static String route = "historique";
 
   @override
-  _SubmitState createState() => new _SubmitState();
+  _HistoriqueState createState() => new _HistoriqueState();
 }
 
-class _SubmitState extends State<Submit> {
+class _HistoriqueState extends State<Historique> {
   int _currentStep = 0;
 
   @override
   Widget build(BuildContext context) {
     final arguments = ModalRoute.of(context)!.settings.arguments as Map;
     cityName = arguments['cityName'];
-    budget = arguments['budget'];
+    budget = arguments['budget'].toString();
     _dateTimeDeb = arguments['dateDeb'];
     _dateTimeFin = arguments['dateFin'];
     hotelName = arguments["hotelName"];
@@ -43,7 +43,7 @@ class _SubmitState extends State<Submit> {
     //totalPrice = int.parse(hotelPrice) * daysNum;
     return new Scaffold(
         appBar: new AppBar(
-            title: Text("Confirmer votre voyage"),
+            title: Text("Historique du voyage"),
             backgroundColor: Colors.green,
             elevation: 1,
             leading: IconButton(
@@ -87,31 +87,6 @@ class _SubmitState extends State<Submit> {
                     }
                   });
                 },
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  List<Map<String, dynamic>> myData = [
-                    {
-                      'Destination': cityName,
-                      'Budget': 1500,
-                      'hotelName': hotelName,
-                      'hotelPrice': hotelPrice,
-                      'restaurantList': restaurantList,
-                      'attractionList': attractionList,
-                      'participants': amisParticipants,
-                      'dateDeb': _dateTimeDeb,
-                      'dateFin': _dateTimeFin
-                    }
-                  ];
-
-                  String userId = (FirebaseAuth.instance.currentUser!).uid;
-                  FirebaseFirestore.instance
-                      .collection('users')
-                      .doc(userId)
-                      .update({"travelList": FieldValue.arrayUnion(myData)});
-                  // Respond to button press
-                },
-                child: Text('Submit'),
               )
             ]))));
   }
