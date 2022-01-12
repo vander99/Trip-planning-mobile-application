@@ -13,7 +13,8 @@ String hotelPrice = "";
 List<String> restaurantList = [];
 List<String> attractionList = [];
 int daysNum = 0;
-int totalPrice = 0;
+List<String> amisParticipants = [];
+//int totalPrice = 0;
 
 class Submit extends StatefulWidget {
   const Submit({Key? key}) : super(key: key);
@@ -38,7 +39,8 @@ class _SubmitState extends State<Submit> {
     restaurantList = arguments["restaurantList"];
     attractionList = arguments["attractionList"];
     daysNum = _dateTimeFin.difference(_dateTimeDeb).inDays;
-    totalPrice = int.parse(hotelPrice) * daysNum;
+    amisParticipants = arguments["participants"];
+    //totalPrice = int.parse(hotelPrice) * daysNum;
     return new Scaffold(
         appBar: new AppBar(
             title: Text("Confirmer votre voyage"),
@@ -96,6 +98,7 @@ class _SubmitState extends State<Submit> {
                       'hotelPrice': hotelPrice,
                       'restaurantList': restaurantList,
                       'attractionList': attractionList,
+                      'participants': amisParticipants,
                       'dateDeb': _dateTimeDeb,
                       'dateFin': _dateTimeFin
                     }
@@ -106,7 +109,6 @@ class _SubmitState extends State<Submit> {
                       .collection('users')
                       .doc(userId)
                       .update({"voyages": FieldValue.arrayUnion(myData)});
-
                   // Respond to button press
                 },
                 child: Text('Submit'),
@@ -133,9 +135,24 @@ class _SubmitState extends State<Submit> {
         content: Column(children: [
           buildTextField("Hotel", hotelName, false),
           buildTextField("Prix/nuit", hotelPrice, false),
-          buildTextField("Prix totale", totalPrice.toString(), false),
+
+          //buildTextField("Prix totale", totalPrice.toString(), false),
         ]),
         isActive: _currentStep >= 1,
+      ),
+      Step(
+        title: Text('Participants'),
+        content: ListView.builder(
+          scrollDirection: Axis.vertical,
+          shrinkWrap: true,
+          itemCount: amisParticipants.length,
+          itemBuilder: (context, index) {
+            return ListTile(
+              title: Text(amisParticipants[index]),
+            );
+          },
+        ),
+        isActive: _currentStep >= 2,
       ),
       Step(
         title: Text('Restaurants'),

@@ -20,6 +20,7 @@ String hotelName = "";
 String hotelPrice = "";
 List<String> restaurantList = [];
 List<String> attractionList = [];
+List<String> amisParticipants = [];
 
 class ReserveAttraction extends StatefulWidget {
   const ReserveAttraction({Key? key}) : super(key: key);
@@ -72,6 +73,7 @@ class _HomePageState extends State<HomePage> {
     hotelName = arguments["hotelName"];
     hotelPrice = arguments["hotelPrice"];
     restaurantList = arguments["restaurantList"];
+    amisParticipants = arguments["participants"];
     return Scaffold(
       appBar: MyAppBar(text: "Explore"),
       body: SingleChildScrollView(
@@ -400,7 +402,8 @@ class _AttractionCard extends State<AttractionCard> {
                   "hotelName": hotelName,
                   "hotelPrice": hotelPrice,
                   "restaurantList": restaurantList,
-                  "attractionList": attractionList
+                  "attractionList": attractionList,
+                  "participants": amisParticipants
                 });
               },
               child: Container(

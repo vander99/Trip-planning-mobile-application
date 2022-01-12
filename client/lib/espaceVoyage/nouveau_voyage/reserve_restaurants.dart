@@ -19,6 +19,7 @@ DateTime _dateTimeFin = DateTime.now();
 String hotelName = "";
 String hotelPrice = "";
 List<String> restaurantList = [];
+List<String> amisParticipants = [];
 
 class ReserveRestaurant extends StatefulWidget {
   const ReserveRestaurant({Key? key}) : super(key: key);
@@ -75,6 +76,7 @@ class _HomePageState extends State<HomePage> {
     _dateTimeFin = arguments['dateFin'];
     hotelName = arguments["hotelName"];
     hotelPrice = arguments["hotelPrice"];
+    amisParticipants = arguments["participants"];
     return Scaffold(
       appBar: MyAppBar(text: "Explore"),
       body: SingleChildScrollView(
@@ -335,7 +337,8 @@ class _RestaurantCard extends State<RestaurantCard> {
                   "dateFin": _dateTimeFin,
                   "hotelName": hotelName,
                   "hotelPrice": hotelPrice,
-                  "restaurantList": restaurantList
+                  "restaurantList": restaurantList,
+                  "participants": amisParticipants
                 });
               },
               child: Container(

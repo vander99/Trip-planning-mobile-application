@@ -3,6 +3,11 @@ import 'package:client/my_home_page.dart';
 import 'color_filters.dart';
 import 'package:flutter/material.dart';
 
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+
 class MainPage extends StatefulWidget {
   final String title;
 
@@ -15,23 +20,6 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  @override
-  Widget build(BuildContext context) => Scaffold(
-        appBar: MyAppBar(text: "Mon espace voyage"),
-        body: ListView(
-          padding: EdgeInsets.all(16),
-          children: [
-            buildColoredCard(),
-            buildImageCard("Budapest",
-                'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/1b/36/37/32/caption.jpg?w=700&h=500&s=1'),
-            buildImageCard("Bordeaux",
-                'https://res.cloudinary.com/hzekpb1cg/image/upload/c_fill,h_410,w_800/q_auto:low,f_auto/s3/public/prod/2019-02/Bordeaux.jpg'),
-            buildImageCard("Paris",
-                'https://www.parisinfo.com/var/otcp/sites/images/node_43/node_51/node_233/vue-sur-les-toits-de-la-tour-saint-jacques-%7C-740x380-%7C-%C2%A9-elodie-gutbrod-cr%C3%A9atividie/21581411-1-fre-FR/Vue-sur-les-toits-de-la-tour-Saint-Jacques-%7C-740x380-%7C-%C2%A9-Elodie-Gutbrod-Cr%C3%A9atividie.jpg'),
-          ],
-        ),
-      );
-
   Widget buildColoredCard() => Card(
         shadowColor: Colors.red,
         elevation: 8,
@@ -123,4 +111,50 @@ class _MainPageState extends State<MainPage> {
           ],
         ),
       );
+  @override
+  Widget build(BuildContext context) {
+    final userRef = FirebaseFirestore.instance.collection('users');
+
+    return FutureBuilder<DocumentSnapshot>(
+        future: userRef.doc((FirebaseAuth.instance.currentUser!).uid).get(),
+        builder:
+            (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+          if (snapshot.hasError) {
+            return Text("Something went wrong");
+          }
+
+          if (snapshot.hasData && !snapshot.data!.exists) {
+            return Text("Document does not exist");
+          }
+
+          if (snapshot.connectionState == ConnectionState.done) {
+            Map<String, dynamic> data =
+                snapshot.data!.data() as Map<String, dynamic>;
+            return Scaffold(
+              appBar: MyAppBar(text: "Mon espace voyage"),
+              body: ListView(
+                padding: EdgeInsets.all(16),
+                children: [
+                  buildColoredCard(),
+                  buildImageCard(data['voyages'][0]['Destination'],
+                      'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/1b/36/37/32/caption.jpg?w=700&h=500&s=1'),
+                  buildImageCard("Bordeaux",
+                      'https://res.cloudinary.com/hzekpb1cg/image/upload/c_fill,h_410,w_800/q_auto:low,f_auto/s3/public/prod/2019-02/Bordeaux.jpg'),
+                  buildImageCard("Paris",
+                      'https://www.parisinfo.com/var/otcp/sites/images/node_43/node_51/node_233/vue-sur-les-toits-de-la-tour-saint-jacques-%7C-740x380-%7C-%C2%A9-elodie-gutbrod-cr%C3%A9atividie/21581411-1-fre-FR/Vue-sur-les-toits-de-la-tour-Saint-Jacques-%7C-740x380-%7C-%C2%A9-Elodie-Gutbrod-Cr%C3%A9atividie.jpg'),
+                ],
+              ),
+            );
+          }
+          return Scaffold(
+            backgroundColor: Colors.green[900],
+            body: Center(
+              child: SpinKitFadingCircle(
+                color: Colors.white,
+                size: 80.0,
+              ),
+            ),
+          );
+        });
+  }
 }
