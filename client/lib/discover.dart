@@ -2,10 +2,8 @@ import 'package:client/authentication_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/src/provider.dart';
 
-import 'package:client/my_espace_voyage.dart';
 import 'package:client/espaceVoyage/mainpage.dart';
 import 'package:client/accueil/my_accueil.dart';
-import 'package:client/profile/my_profile.dart';
 import 'package:client/signin.dart';
 
 class DiscoverPage extends StatefulWidget {
@@ -36,7 +34,7 @@ class DiscoverPageState extends State<DiscoverPage> {
               Icons.home,
               color: Colors.green,
             ),
-            title: Text("Home"),
+            title: Text("Discover"),
           ),
           
           BottomNavigationBarItem(
