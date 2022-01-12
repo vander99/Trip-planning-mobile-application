@@ -153,8 +153,6 @@ class FormScreenState extends State<FormScreen> {
 
                     _formKey.currentState!.save();
 
-                    print(_name);
-                    print(_budget);
                     Navigator.pushNamed(context, "reserve_hotel", arguments: {
                       "cityName": _name,
                       "budget": _budget,
