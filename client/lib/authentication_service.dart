@@ -41,11 +41,14 @@ class AuthenticationService {
       DocumentReference<Map<String, dynamic>> users =
           FirebaseFirestore.instance.collection('users').doc(userId);
       users.set({
+        'userID': userId,
         'email': email,
         'password': password,
         'pseudo': pseudo,
         'phone number': phone,
-        'description': ""
+        'description': "",
+        'friendsList': [],
+        'travelList': []
       });
       signedUp = true;
       return signedUp;
