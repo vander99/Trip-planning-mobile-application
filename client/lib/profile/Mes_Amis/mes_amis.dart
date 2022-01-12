@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
 import 'package:client/my_home_page.dart';
 
@@ -67,51 +69,64 @@ class _MesAmis extends State<MesAmis> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(
-              height: 2,
-            ),
-            SizedBox(
               height: 30,
             ),
             Container(
               width: double.infinity,
               height: 48,
               decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(15),
-                  boxShadow: [
-                    BoxShadow(
-                        color: Colors.grey.withOpacity(0.2),
-                        spreadRadius: 2,
-                        blurRadius: 15,
-                        offset: Offset(0, 1))
-                  ]),
-              child: Row(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(15),
+                boxShadow: [
+                  BoxShadow(
+                      color: Colors.grey.withOpacity(0.2),
+                      spreadRadius: 2,
+                      blurRadius: 15,
+                      offset: Offset(0, 1))
+                ],
+              ),
+              child: Column(
                 children: [
-                  SizedBox(
-                    width: 5,
+                  Row(
+                    children: [
+                      SizedBox(
+                        width: 5,
+                      ),
+                      IconButton(
+                          onPressed: () {},
+                          icon: Icon(
+                            Icons.search,
+                            color: Colors.black,
+                          )),
+                      SizedBox(
+                        width: 5,
+                      ),
+                      Flexible(
+                        child: Column(
+                          children: const [
+                            TextField(
+                              cursorColor: Colors.black,
+                              decoration: InputDecoration(
+                                  border: InputBorder.none,
+                                  hintText: "Search for contacts"),
+                            ),
+                          ],
+                        ),
+                      )
+                    ],
                   ),
-                  IconButton(
-                      onPressed: () {},
-                      icon: Icon(
-                        Icons.search,
-                        color: Colors.black,
-                      )),
-                  SizedBox(
-                    width: 5,
-                  ),
-                  Flexible(
-                    child: TextField(
-                      cursorColor: Colors.black,
-                      decoration: InputDecoration(
-                          border: InputBorder.none,
-                          hintText: "Search for contacts"),
-                    ),
-                  )
                 ],
               ),
             ),
-            SizedBox(
-              height: 40,
+            Container(
+              padding: EdgeInsets.fromLTRB(50, 0, 0, 0),
+              child: TextButton.icon(
+                onPressed: () {
+                  Navigator.pushNamed(context, "nouveauAmis");
+                },
+                icon: const Icon(Icons.add, size: 18),
+                label: const Text("Ajouter de nouveaux amis"),
+              ),
             ),
             Column(
               children: List.generate(usersList.length, (index) {
@@ -146,11 +161,12 @@ class _MesAmis extends State<MesAmis> {
                               width: 60,
                               height: 60,
                               decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(30),
-                                  image: DecorationImage(
-                                      image:
-                                          NetworkImage(usersList[index]['img']),
-                                      fit: BoxFit.cover)),
+                                borderRadius: BorderRadius.circular(30),
+                                image: DecorationImage(
+                                    image:
+                                        NetworkImage(usersList[index]['img']),
+                                    fit: BoxFit.cover),
+                              ),
                             ),
                           ),
                         ),

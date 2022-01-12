@@ -10,7 +10,7 @@ class Body extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-        child: new Column(
+        child: Column(
       children: [
         ProfilePic(),
         SizedBox(height: 20),
