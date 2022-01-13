@@ -37,6 +37,7 @@ class AuthenticationService {
       await _firebaseAuth.createUserWithEmailAndPassword(
           email: email, password: password);
       String userId = (await FirebaseAuth.instance.currentUser!).uid;
+      print(userId);
 
       DocumentReference<Map<String, dynamic>> users =
           FirebaseFirestore.instance.collection('users').doc(userId);
@@ -48,11 +49,20 @@ class AuthenticationService {
         'phone number': phone,
         'description': "",
         'friendsList': [],
-        'travelList': []
+        'travelList': [],
+      });
+      DocumentReference<Map<String, dynamic>> usersPreference =
+          FirebaseFirestore.instance.collection('preferences').doc(userId);
+      usersPreference.set({
+        'userID': userId,
+        'countryList': [],
+        'activityList': [],
+        'categoriList': []
       });
       signedUp = true;
       return signedUp;
     } on FirebaseAuthException catch (e) {
+      print(e.toString());
       return signedUp;
     }
   }

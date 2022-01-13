@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:client/my_home_page.dart';
 
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class Product {
   final image;
   final name;
@@ -62,55 +66,58 @@ class Pays extends StatelessWidget {
           Column(
               children: products
                   .map(
-                    (e) => Container(
-                      margin:
-                          EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(13),
-                        boxShadow: [
-                          BoxShadow(
-                              color: Colors.grey,
-                              blurRadius: 10,
-                              spreadRadius: 3,
-                              offset: Offset(3, 4))
-                        ],
-                      ),
-                      child: ListTile(
-                        leading: Image.network(
-                          e.image,
-                          fit: BoxFit.cover,
-                          width: 90,
-                          height: 100,
-                        ),
-                        title: Text(
-                          e.name,
-                          style: TextStyle(fontSize: 25),
-                        ),
-                        subtitle: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            //Text("\$ " + e.price.toString()),
-                            Text("petite description "),
-                            SizedBox(height: 10),
-                            Container(
-                              height: 40,
-                              child: Stack(
-                                children: <Widget>[
-                                  Positioned(
-                                    right: 5,
-                                    top: 0,
-                                    child: Icon(
-                                      Icons.stars,
-                                      color: Colors.yellow,
-                                      size: 30.0,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            )
+                    (e) => GestureDetector(
+                      onTap: () {},
+                      child: Container(
+                        margin:
+                            EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(13),
+                          boxShadow: [
+                            BoxShadow(
+                                color: Colors.grey,
+                                blurRadius: 10,
+                                spreadRadius: 3,
+                                offset: Offset(3, 4))
                           ],
+                        ),
+                        child: ListTile(
+                          leading: Image.network(
+                            e.image,
+                            fit: BoxFit.cover,
+                            width: 90,
+                            height: 100,
+                          ),
+                          title: Text(
+                            e.name,
+                            style: TextStyle(fontSize: 25),
+                          ),
+                          subtitle: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              //Text("\$ " + e.price.toString()),
+                              Text("petite description "),
+                              SizedBox(height: 10),
+                              Container(
+                                height: 40,
+                                child: Stack(
+                                  children: <Widget>[
+                                    Positioned(
+                                      right: 5,
+                                      top: 0,
+                                      child: Icon(
+                                        Icons.stars,
+                                        color: Colors.yellow,
+                                        size: 30.0,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
                         ),
                       ),
                     ),

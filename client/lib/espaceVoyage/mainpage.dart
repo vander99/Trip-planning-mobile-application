@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:client/my_home_page.dart';
 
 import 'color_filters.dart';
@@ -7,6 +9,25 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+
+import 'package:http/http.dart' as http;
+
+Future<String> fetchPhoto(String city) async {
+  var url =
+      "https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=" +
+          city +
+          "&key=AIzaSyCZhqLnyTVKJsO88wgVoPkVG5nUwWxjh1Y&inputtype=textquery&fields=name,photos";
+  final response = await http.get(Uri.parse(url));
+  if (response.statusCode == 200) {
+    var photoRef = jsonDecode(response.body)['candidates'][0]['photos'][0]
+        ['photo_reference'];
+    return "https://maps.googleapis.com/maps/api/place/photo?photoreference=" +
+        photoRef +
+        "&key=AIzaSyCZhqLnyTVKJsO88wgVoPkVG5nUwWxjh1Y&maxwidth=400&maxheight=400";
+  } else {
+    throw Exception('Failed to load PhotoRef');
+  }
+}
 
 class MainPage extends StatefulWidget {
   final String title;
@@ -160,23 +181,39 @@ class _MainPageState extends State<MainPage> {
                           shrinkWrap: true,
                           itemCount: data['travelList'].length,
                           itemBuilder: (context, index) {
-                            return buildImageCard(
-                                data['travelList'][index]['Destination'],
-                                'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/1b/36/37/32/caption.jpg?w=700&h=500&s=1',
-                                data['travelList'][index]['Budget'],
-                                DateTime.parse(data['travelList'][index]
-                                        ['dateDeb']
-                                    .toDate()
-                                    .toString()),
-                                DateTime.parse(data['travelList'][index]
-                                        ['dateFin']
-                                    .toDate()
-                                    .toString()),
-                                data['travelList'][index]['hotelName'],
-                                data['travelList'][index]['hotelPrice'],
-                                data['travelList'][index]['restaurantList'],
-                                data['travelList'][index]['attractionList'],
-                                data['travelList'][index]['participants']);
+                            String myImage =
+                                "https://media.istockphoto.com/photos/small-town-usa-picture-id95522458?k=20&m=95522458&s=612x612&w=0&h=khbEVVCGnkFj7Lma8P4h1aCq3QKWrlIw3uetDMlku1g=";
+                            return FutureBuilder<String>(
+                                future: fetchPhoto(
+                                    data['travelList'][index]['Destination']),
+                                builder: (BuildContext context,
+                                    AsyncSnapshot<String> snapshot) {
+                                  if (snapshot.hasData) {
+                                    myImage = snapshot.data!;
+                                    return buildImageCard(
+                                        data['travelList'][index]
+                                            ['Destination'],
+                                        myImage,
+                                        data['travelList'][index]['Budget'],
+                                        DateTime.parse(data['travelList'][index]
+                                                ['dateDeb']
+                                            .toDate()
+                                            .toString()),
+                                        DateTime.parse(data['travelList'][index]
+                                                ['dateFin']
+                                            .toDate()
+                                            .toString()),
+                                        data['travelList'][index]['hotelName'],
+                                        data['travelList'][index]['hotelPrice'],
+                                        data['travelList'][index]
+                                            ['restaurantList'],
+                                        data['travelList'][index]
+                                            ['attractionList'],
+                                        data['travelList'][index]
+                                            ['participants']);
+                                  }
+                                  return Text("wait");
+                                });
                           },
                         )
                       : Text("Vous n'avez encore organisé aucun voyage"),
