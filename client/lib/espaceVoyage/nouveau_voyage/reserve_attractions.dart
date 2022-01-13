@@ -21,6 +21,7 @@ String hotelPrice = "";
 List<String> restaurantList = [];
 List<String> attractionList = [];
 List<String> amisParticipants = [];
+List<dynamic> friendListId = [];
 
 class ReserveAttraction extends StatefulWidget {
   const ReserveAttraction({Key? key}) : super(key: key);
@@ -74,6 +75,7 @@ class _HomePageState extends State<HomePage> {
     hotelPrice = arguments["hotelPrice"];
     restaurantList = arguments["restaurantList"];
     amisParticipants = arguments["participants"];
+    friendListId = arguments["idAmis"];
     return Scaffold(
       appBar: MyAppBar(text: "Explore"),
       body: SingleChildScrollView(
@@ -403,7 +405,8 @@ class _AttractionCard extends State<AttractionCard> {
                   "hotelPrice": hotelPrice,
                   "restaurantList": restaurantList,
                   "attractionList": attractionList,
-                  "participants": amisParticipants
+                  "participants": amisParticipants,
+                  "idAmis": friendListId
                 });
               },
               child: Container(

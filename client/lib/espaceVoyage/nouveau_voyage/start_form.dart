@@ -207,7 +207,8 @@ class FormScreenState extends State<FormScreen> {
                                 "budget": _budget,
                                 "dateDeb": _dateTimeDeb,
                                 "dateFin": _dateTimeFin,
-                                "participants": amisParticipants
+                                "participants": amisParticipants,
+                                "idAmis": friendListId
                               });
 
                           //Send to API

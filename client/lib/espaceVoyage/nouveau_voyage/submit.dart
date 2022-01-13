@@ -14,7 +14,7 @@ List<String> restaurantList = [];
 List<String> attractionList = [];
 int daysNum = 0;
 List<String> amisParticipants = [];
-//int totalPrice = 0;
+List<dynamic> friendListId = [];
 
 class Submit extends StatefulWidget {
   const Submit({Key? key}) : super(key: key);
@@ -40,7 +40,8 @@ class _SubmitState extends State<Submit> {
     attractionList = arguments["attractionList"];
     daysNum = _dateTimeFin.difference(_dateTimeDeb).inDays;
     amisParticipants = arguments["participants"];
-    //totalPrice = int.parse(hotelPrice) * daysNum;
+    friendListId = arguments["idAmis"];
+
     return new Scaffold(
         appBar: new AppBar(
             title: Text("Confirmer votre voyage"),
@@ -109,6 +110,15 @@ class _SubmitState extends State<Submit> {
                       .collection('users')
                       .doc(userId)
                       .update({"travelList": FieldValue.arrayUnion(myData)});
+                  friendListId.forEach((item) => {
+                        print(item),
+                        FirebaseFirestore.instance
+                            .collection('users')
+                            .doc(item)
+                            .update(
+                                {"travelList": FieldValue.arrayUnion(myData)}),
+                      });
+                  Navigator.pushNamed(context, "main_home");
                   // Respond to button press
                 },
                 child: Text('Submit'),

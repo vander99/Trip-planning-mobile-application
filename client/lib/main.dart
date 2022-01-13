@@ -48,6 +48,8 @@ class MyApp extends StatelessWidget {
 
 class AuthenticationWrapper extends StatelessWidget {
   const AuthenticationWrapper({Key? key}) : super(key: key);
+  static String route = "main_home";
+
   @override
   Widget build(BuildContext context) {
     final firebaseUser = context.watch<User?>();
