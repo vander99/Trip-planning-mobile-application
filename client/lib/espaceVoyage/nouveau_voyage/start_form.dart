@@ -14,6 +14,10 @@ List<String> amisParticipants = [];
 List<dynamic> friendListId = [];
 List<dynamic> friendList = [];
 String myPseudo = "test";
+String myId = "";
+
+List<UserIdPseudo> friendData = [];
+List<dynamic> participantsIds = [];
 
 class FormScreen extends StatefulWidget {
   static String route = "start_form";
@@ -74,6 +78,8 @@ class FormScreenState extends State<FormScreen> {
   @override
   Widget build(BuildContext context) {
     final userRef = FirebaseFirestore.instance.collection('users');
+    friendList = [];
+    participantsIds = [];
 
     final arguments = ModalRoute.of(context)!.settings.arguments as Map;
     friendListId = arguments['friends'];
@@ -90,24 +96,25 @@ class FormScreenState extends State<FormScreen> {
             return Text("Something went wrong");
           }
 
-          /*if (snapshot.hasData && !snapshot.data!.exists) {
-            return Text("Document does not exist");
-          }*/
-          print("snapshot");
-          print(snapshot.data!.docs[0]['pseudo']);
           snapshot.data!.docs.forEach((item) => {
                 if (friendListId.contains(item['userID']) &&
-                    !friendList.contains(item['pseudo']))
+                    (friendList.contains(item['pseudo']) == false))
                   {
                     friendList.add(item['pseudo']),
-                    amisParticipants.add(item['pseudo'])
+                    //amisParticipants.add(item['userID'])
+                    friendData.add(UserIdPseudo(
+                        pseudo: item['pseudo'], userId: item['userID'])),
                   },
                 if (item['userID'] == FirebaseAuth.instance.currentUser!.uid)
-                  {myPseudo = item['pseudo']}
+                  {
+                    myPseudo = item['pseudo'],
+                    myId = item['userID'],
+                    if (participantsIds.contains(myId) == false)
+                      {participantsIds.add(myId)},
+                    if (amisParticipants.contains(myPseudo) == false)
+                      {amisParticipants.add(myPseudo)}
+                  }
               });
-
-          /*Map<String, dynamic> data =
-                snapshot.data!.data() as Map<String, dynamic>;*/
           return Scaffold(
             appBar: AppBar(
               title: Text("Informations du voyage",
@@ -200,7 +207,7 @@ class FormScreenState extends State<FormScreen> {
                           }
 
                           _formKey.currentState!.save();
-
+                          print(participantsIds);
                           Navigator.pushNamed(context, "reserve_hotel",
                               arguments: {
                                 "cityName": _name,
@@ -208,7 +215,7 @@ class FormScreenState extends State<FormScreen> {
                                 "dateDeb": _dateTimeDeb,
                                 "dateFin": _dateTimeFin,
                                 "participants": amisParticipants,
-                                "idAmis": friendListId
+                                "idAmis": participantsIds
                               });
 
                           //Send to API
@@ -241,6 +248,10 @@ class _MultiSelectState extends State<MultiSelect> {
     setState(() {
       if (isSelected) {
         _selectedItems.add(itemValue);
+        print(_selectedItems);
+        var index =
+            friendData.indexWhere((element) => element.pseudo == itemValue);
+        participantsIds.add(friendData[index].userId);
       } else {
         _selectedItems.remove(itemValue);
       }
@@ -347,4 +358,11 @@ class _TestAmis extends State<TestAmis> {
       //),
     );
   }
+}
+
+class UserIdPseudo {
+  String pseudo;
+  String userId;
+
+  UserIdPseudo({required this.pseudo, required this.userId});
 }
